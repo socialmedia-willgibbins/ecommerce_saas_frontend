@@ -34,7 +34,7 @@ const UpdateProduct: React.FC = () => {
   const [productList, setProductList] = useState<ProductData[]>([]);
   const [imageList, setImageList] = useState<ImageData[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<ProductData | null>(
-    null
+    null,
   );
   const [selectedProductOption, setSelectedProductOption] = useState<any>(null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -42,7 +42,7 @@ const UpdateProduct: React.FC = () => {
   const [submitLoading, setSubmitLoading] = useState(false);
   const [error, setError] = useState("");
   const [initialFormData, setInitialFormData] = useState<ProductData | null>(
-    null
+    null,
   );
 
   // For form fields
@@ -62,7 +62,7 @@ const UpdateProduct: React.FC = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${access_token}`,
           },
-        }
+        },
       );
       setProductList(resp.data.results || []);
     } catch (err: any) {
@@ -88,7 +88,7 @@ const UpdateProduct: React.FC = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${access_token}`,
           },
-        }
+        },
       );
       setImageList(resp.data.results || []);
     } catch (err: any) {
@@ -108,7 +108,7 @@ const UpdateProduct: React.FC = () => {
   useEffect(() => {
     if (selectedProduct && selectedProduct.product_id) {
       const filtered = imageList.filter(
-        (img) => img.product === selectedProduct.product_id
+        (img) => img.product === selectedProduct.product_id,
       );
       setFilteredImage(filtered.length ? filtered[filtered.length - 1] : null);
     } else {
@@ -163,14 +163,15 @@ const UpdateProduct: React.FC = () => {
     if (!selectedImage) return;
     
     const filtered = imageList.filter((img) => img.product === productId);
+    
     try {
       if (filtered.length > 0) {
-        // UPDATE existing image - use "image" field
-        const formDataImg = new FormData();
-        formDataImg.append("product_id", String(productId));
-        formDataImg.append("image", selectedImage); // PUT expects "image"
-        
+        // Update existing image - use 'image' field for PUT
         const id = filtered[filtered.length - 1].id;
+        const formDataImg = new FormData();
+        formDataImg.append("product", String(productId));
+        formDataImg.append("image", selectedImage);
+        
         await axios.put(`${domainUrl}products/uploads/${id}/`, formDataImg, {
           headers: {
             "Content-Type": "multipart/form-data",
@@ -178,10 +179,10 @@ const UpdateProduct: React.FC = () => {
           },
         });
       } else {
-        // CREATE new image - use "normal_image" field
+        // Create new image - use 'normal_image' field for POST
         const formDataImg = new FormData();
-        formDataImg.append("product_id", String(productId));
-        formDataImg.append("normal_image", selectedImage); // POST expects "normal_image"
+        formDataImg.append("product", String(productId));
+        formDataImg.append("normal_image", selectedImage);
         
         await axios.post(`${domainUrl}products/uploads/`, formDataImg, {
           headers: {
@@ -294,7 +295,7 @@ const UpdateProduct: React.FC = () => {
               "Content-Type": "application/json",
               Authorization: `Bearer ${access_token}`,
             },
-          }
+          },
         );
 
         if (resp.status !== 200 && resp.status !== 204) {
@@ -469,7 +470,7 @@ const UpdateProduct: React.FC = () => {
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-600">
-                  Product Image 
+                  Product Image
                 </label>
                 <div className="flex items-center gap-4 mt-2">
                   {(selectedImage || filteredImage) && (
@@ -500,7 +501,7 @@ const UpdateProduct: React.FC = () => {
                         onClick={() => {
                           // trigger file input
                           const input = document.getElementById(
-                            "product-image-upload"
+                            "product-image-upload",
                           );
                           if (input) input.click();
                         }}

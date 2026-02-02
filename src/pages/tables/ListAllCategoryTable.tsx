@@ -209,7 +209,7 @@ const EditModal = ({ isOpen, onClose, category, onSave, loading }: any) => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      if (file.size > 2048576) {
+      if (file.size > 1024 * 1024) {
         toast.error("Image must be < 1MB");
         return;
       }
@@ -551,113 +551,30 @@ export const ListAllCategoryTable = () => {
     imageFile: File | null
   ) => {
     setActionLoading(true);
-    setError("");
-
-    if (!selectedCategory) {
-      setError("Select a category to update.");
-      setActionLoading(false);
-      return;
-    }
-
-    // Determine what changed by comparing incoming data with currently selected category
-    const productUpdated =
-      data.category_code !== selectedCategory.category_code ||
-      data.name !== selectedCategory.name ||
-      data.description !== selectedCategory.description ||
-      data.is_active !== selectedCategory.is_active;
-
-    const imageUpdated = !!imageFile;
-
-    if (!productUpdated && !imageUpdated) {
-      setError("No changes detected.");
-      setActionLoading(false);
-      return;
-    }
-
-    // Helper to upload or update image depending on whether an image already exists
-    const uploadImage = async (categoryId: number, file: File) => {
-      setError("");
-      if (!file) return;
-
-      try {
-        const existingImage = selectedCategory?.images?.find(
-          (img) => img.type === "normal"
-        );
-
-        if (existingImage) {
-          // UPDATE existing image - use "image" field
-          const formDataImg = new FormData();
-          formDataImg.append("category_id", categoryId.toString());
-          formDataImg.append("image", file); // PUT expects "image"
-
-          const imageResp = await axios.put(
-            `${domainUrl}products/uploads/${existingImage.id}/`,
-            formDataImg,
-            {
-              headers: {
-                "Content-Type": "multipart/form-data",
-                Authorization: `Bearer ${access_token}`,
-              },
-            }
-          );
-          if (imageResp.status === 200) {
-            toast.success("Image updated.");
-          }
-        } else {
-          // CREATE new image - use "normal_image" field
-          const formDataImg = new FormData();
-          formDataImg.append("category_id", categoryId.toString());
-          formDataImg.append("normal_image", file); // POST expects "normal_image"
-
-          const imageResp = await axios.post(
-            `${domainUrl}products/uploads/`,
-            formDataImg,
-            {
-              headers: {
-                "Content-Type": "multipart/form-data",
-                Authorization: `Bearer ${access_token}`,
-              },
-            }
-          );
-          if (imageResp.status === 201) {
-            toast.success("Image added.");
-          }
-        }
-      } catch (err: any) {
-        setError("Image upload failed.");
-        throw err;
-      }
-    };
-
     try {
-      // 1. Update Details if changed
-      if (productUpdated) {
-        const resp = await axios.put(
-          `${domainUrl}products/categories/${id}/`,
-          data,
-          { headers: { Authorization: `Bearer ${access_token}` } }
-        );
+      // 1. Update Details
+      await axios.put(`${domainUrl}products/categories/${id}/`, data, {
+        headers: { Authorization: `Bearer ${access_token}` },
+      });
 
-        if (resp.status !== 200 && resp.status !== 204) {
-          throw new Error("Update failed.");
-        }
-      }
-
-      // 2. Upload/Update Image if provided
-      if (imageUpdated && imageFile) {
-        await uploadImage(id, imageFile);
+      // 2. Upload Image (if changed)
+      if (imageFile) {
+        const formData = new FormData();
+        formData.append("image", imageFile);
+        formData.append("category", id.toString());
+        formData.append("type", "normal");
+        await axios.post(`${domainUrl}products/uploads/`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${access_token}`,
+          },
+        });
       }
 
       toast.success("Category updated successfully");
       setIsEditOpen(false);
       fetchCategories(); // Refresh list
-    } catch (error: any) {
-      if (error.response?.data?.code === "token_not_valid") {
-        logOutHandler();
-        navigate("/login");
-        toast.error("Session expired.", { position: "top-right" });
-        return;
-      }
+    } catch (error) {
       toast.error("Failed to update category");
     } finally {
       setActionLoading(false);

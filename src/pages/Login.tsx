@@ -5,6 +5,12 @@ import { domainUrl } from "../utils/constants";
 import axios from "axios";
 import Logo from "../assets/logo.png";
 import OtpInput from "react-otp-input";
+import {
+  EyeIcon,
+  EyeSlashIcon,
+  LockClosedIcon,
+  EnvelopeIcon,
+} from "@heroicons/react/24/outline";
 
 interface UserData {
   email: string;
@@ -25,15 +31,6 @@ export default function Login() {
   const [resendLoading, setResendLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-
-  // Redirect if already logged in
-  useEffect(() => {
-    const token = localStorage.getItem('access_token');
-    const role = localStorage.getItem('role');
-    if (token && role === 'admin') {
-      navigate('/admin-home', { replace: true });
-    }
-  }, [navigate]);
 
   // Countdown Timer
   useEffect(() => {
@@ -105,7 +102,7 @@ export default function Login() {
       localStorage.setItem("phoneNumber", resp.data.user.phone_number);
       localStorage.setItem(
         "default_address",
-        resp.data.user.default_shipping_address || ""
+        resp.data.user.default_shipping_address || "",
       );
 
       if (resp.data.access && resp.data.user.role === "admin") {
@@ -140,197 +137,232 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0f2027] via-[#2c5364] to-[#203a43] px-2">
-      <div className="relative bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl p-8 w-full max-w-md sm:max-w-lg md:max-w-xl transition-all duration-300">
-        <div className="flex flex-col items-center mb-8">
-          <img
-            src={Logo}
-            alt="Logo"
-            className="rounded-2xl h-24 w-24 object-contain border-4 border-blue-200 shadow-lg mb-2 bg-white"
-          />
-          <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-indigo-700 to-blue-400 drop-shadow-sm tracking-tight mt-2">
-            UpStocks
+    <div className="min-h-screen bg-gray-50 dark:bg-black flex items-center justify-center px-4 transition-colors duration-500">
+      <div className="w-full max-w-md">
+        {/* Logo & Header */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center mb-6">
+            <img
+              src={Logo}
+              alt="Logo"
+              className="h-16 w-16 object-contain rounded-xl shadow-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950"
+            />
+          </div>
+          <h1 className="text-3xl font-bold text-zinc-900 dark:text-white mb-2">
+            {showOtp ? "Verify OTP" : "Welcome Back"}
           </h1>
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mt-4">
-            {showOtp ? "Enter OTP" : "Sign in to your account"}
-          </h2>
-          <p className="text-gray-500 text-sm mt-1 text-center">
+          <p className="text-sm text-zinc-500 dark:text-zinc-400">
             {showOtp
-              ? "We have sent an OTP to your email."
-              : "Welcome back! Please enter your details."}
+              ? "Enter the 6-digit code sent to your email"
+              : "Sign in to access your dashboard"}
           </p>
         </div>
 
-        {!showOtp ? (
-          <form onSubmit={handleSubmitAdmin} className="space-y-6">
-            {/* Email */}
-            <div>
-              <label
-                className="block text-gray-700 mb-1 font-medium"
-                htmlFor="email"
-              >
-                Email
-              </label>
-              <input
-                id="email"
-                type="email"
-                placeholder="you@example.com"
-                className="border border-gray-300 rounded-xl px-4 py-3 w-full bg-gray-50 text-gray-800"
-                value={userData.email}
-                onChange={(e) => handleInputChange("email", e.target.value)}
-                required
-                disabled={loading}
-              />
-            </div>
+        {/* Main Card */}
+        <div className="bg-white dark:bg-zinc-950 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
+          <div className="p-8">
+            {!showOtp ? (
+              <form onSubmit={handleSubmitAdmin} className="space-y-6">
+                {/* Email Input */}
+                <div className="space-y-2">
+                  <label
+                    htmlFor="email"
+                    className="block text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400"
+                  >
+                    Email Address <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <EnvelopeIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-400" />
+                    <input
+                      id="email"
+                      type="email"
+                      placeholder="you@example.com"
+                      className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-white text-sm rounded-lg pl-10 pr-4 py-3 outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent transition-all placeholder:text-zinc-400"
+                      value={userData.email}
+                      onChange={(e) =>
+                        handleInputChange("email", e.target.value)
+                      }
+                      required
+                      disabled={loading}
+                    />
+                  </div>
+                </div>
 
-            {/* Password */}
-            <div>
-              <label
-                className="block text-gray-700 mb-1 font-medium"
-                htmlFor="password"
-              >
-                Password
-              </label>
-              <div className="relative">
-                <input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
-                  className="border border-gray-300 rounded-xl px-4 py-3 w-full pr-12 bg-gray-50 text-gray-800"
-                  value={userData.password}
-                  onChange={(e) =>
-                    handleInputChange("password", e.target.value)
-                  }
-                  required
-                  disabled={loading}
-                />
+                {/* Password Input */}
+                <div className="space-y-2">
+                  <label
+                    htmlFor="password"
+                    className="block text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400"
+                  >
+                    Password <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <LockClosedIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-400" />
+                    <input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter your password"
+                      className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-white text-sm rounded-lg pl-10 pr-12 py-3 outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent transition-all placeholder:text-zinc-400"
+                      value={userData.password}
+                      onChange={(e) =>
+                        handleInputChange("password", e.target.value)
+                      }
+                      required
+                      disabled={loading}
+                    />
+                    <button
+                      type="button"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      disabled={loading}
+                    >
+                      {showPassword ? (
+                        <EyeSlashIcon className="h-5 w-5" />
+                      ) : (
+                        <EyeIcon className="h-5 w-5" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Forgot Password Link */}
+                <div className="flex justify-end">
+                  <Link
+                    to="/forgot-password"
+                    className="text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors"
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
+
+                {/* Error Message */}
+                {error && (
+                  <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-lg px-4 py-3">
+                    <p className="text-sm text-red-600 dark:text-red-400">
+                      {error}
+                    </p>
+                  </div>
+                )}
+
+                {/* Submit Button */}
                 <button
-                  type="button"
-                  className="absolute inset-y-0 right-3 flex items-center text-gray-500"
-                  onClick={() => setShowPassword((prev) => !prev)}
+                  type="submit"
                   disabled={loading}
+                  className="w-full bg-black dark:bg-white text-white dark:text-black font-semibold py-3 rounded-lg hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
                 >
-                  {showPassword ? (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-6 w-6"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M13.875 18.825A10.05 10.05 0 0112 19c-5 0-9.27-3.11-11-7.5a11.72 11.72 0 012.1-3.36m3.1-2.88A9.97 9.97 0 0112 5c5 0 9.27 3.11 11 7.5a11.72 11.72 0 01-2.1 3.36m-3.1 2.88A9.97 9.97 0 0112 19c-1.07 0-2.1-.13-3.09-.37M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M3 3l18 18"
-                      />
-                    </svg>
+                  {loading ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <svg
+                        className="animate-spin h-5 w-5"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      Signing In...
+                    </span>
                   ) : (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-6 w-6"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                      />
-                    </svg>
+                    "Sign In"
                   )}
                 </button>
-              </div>
-            </div>
+              </form>
+            ) : (
+              <form onSubmit={handleOtpSubmit} className="space-y-6">
+                {/* OTP Input */}
+                <div className="space-y-4">
+                  <div className="flex justify-center">
+                    <OtpInput
+                      value={otp}
+                      onChange={setOtp}
+                      numInputs={6}
+                      inputType="tel"
+                      renderInput={(props) => (
+                        <input
+                          {...props}
+                          placeholder="-"
+                          className="!w-12 !h-14 mx-1.5 text-center text-2xl font-bold bg-zinc-50 dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-white rounded-lg outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent transition-all"
+                        />
+                      )}
+                    />
+                  </div>
 
-            <div className="flex justify-end">
-              <Link
-                to="/forgot-password"
-                className="text-sm text-blue-600 hover:underline font-medium"
-              >
-                Forgot password?
-              </Link>
-            </div>
+                  {/* Resend OTP */}
+                  <div className="text-center">
+                    <button
+                      type="button"
+                      className={`text-sm font-medium transition-colors ${
+                        resendDisabled
+                          ? "text-zinc-400 cursor-not-allowed"
+                          : "text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white"
+                      }`}
+                      onClick={handleResendOtp}
+                      disabled={resendDisabled || resendLoading}
+                    >
+                      {resendLoading
+                        ? "Sending..."
+                        : resendDisabled
+                          ? `Resend OTP in ${resendTimer}s`
+                          : "Resend OTP"}
+                    </button>
+                  </div>
+                </div>
 
-            {error && <div className="text-red-500 text-sm">{error}</div>}
+                {/* Submit Button */}
+                <button
+                  type="submit"
+                  disabled={loading || otp.length !== 6}
+                  className="w-full bg-black dark:bg-white text-white dark:text-black font-semibold py-3 rounded-lg hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                >
+                  {loading ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <svg
+                        className="animate-spin h-5 w-5"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      Verifying...
+                    </span>
+                  ) : (
+                    "Verify & Continue"
+                  )}
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl shadow-lg text-lg"
-            >
-              {loading ? "Signing In..." : "Sign In"}
-            </button>
-          </form>
-        ) : (
-          <form onSubmit={handleOtpSubmit} className="space-y-6">
-            <div className="flex justify-center">
-              <OtpInput
-                value={otp}
-                onChange={setOtp}
-                numInputs={6}
-                inputType="tel"
-                renderInput={(props) => (
-                  <input
-                    {...props}
-                    placeholder="-"
-                    style={{
-                      fontSize: "2rem",
-                      height: "3.2rem",
-                      width: "2.8rem",
-                      margin: "0.3rem",
-                      padding: "0.2rem 0",
-                      textAlign: "center",
-                      borderRadius: "0.75rem",
-                      border: "2px solid #3b82f6",
-                      backgroundColor: "#f8fafc",
-                      outline: "none",
-                    }}
-                  />
-                )}
-              />
-            </div>
-
-            <div className="flex justify-between items-center text-sm">
-              <button
-                type="button"
-                className={`font-medium ${
-                  resendDisabled
-                    ? "text-gray-400 cursor-not-allowed"
-                    : "text-blue-600 hover:underline"
-                }`}
-                onClick={handleResendOtp}
-                disabled={resendDisabled || resendLoading}
-              >
-                {resendLoading
-                  ? "Sending..."
-                  : `Resend OTP${resendDisabled ? ` in ${resendTimer}s` : ""}`}
-              </button>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl shadow-lg text-lg"
-            >
-              {loading ? "Verifying..." : "Submit OTP"}
-            </button>
-          </form>
-        )}
+        {/* Footer Text */}
+        <p className="text-center text-xs text-zinc-500 dark:text-zinc-400 mt-6">
+          © 2026 UpStocks. All rights reserved.
+        </p>
       </div>
     </div>
   );

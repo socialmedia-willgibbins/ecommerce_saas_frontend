@@ -29,12 +29,12 @@ const AddCategory: React.FC = () => {
   });
 
   const [loading, setLoading] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<any>(null);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   // --- Image Handling Logic ---
   const handleFileValidation = (file: File) => {
-    if (file.size > 2048576) {
+    if (file.size > 1048576) {
       // 1MB
       toast.error("Image size must be less than 1MB.", {
         position: "top-center",
@@ -80,11 +80,9 @@ const AddCategory: React.FC = () => {
     if (!selectedImage) return;
 
     try {
-      const formData:any = new FormData();
-      // formData.append("normal_image", selectedImage); // Changed from "image" to "normal_image"
-      formData.append("category_id", categoryId);
-
-    formData.append("normal_image", selectedImage); // Changed from "image" to "normal_image"
+      const formData = new FormData();
+      formData.append("normal_image", selectedImage);
+      formData.append("category", categoryId);
 
       const response = await axios.post(
         `${domainUrl}products/uploads/`,
@@ -94,7 +92,7 @@ const AddCategory: React.FC = () => {
             "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${access_token}`,
           },
-        }
+        },
       );
 
       if (response.status === 201) {
@@ -329,7 +327,7 @@ const AddCategory: React.FC = () => {
                         onClick={() => fileInputRef.current?.click()}
                       >
                         <input
-                        ref={fileInputRef}
+                          ref={fileInputRef}
                           type="file"
                           id="image-upload"
                           className="hidden"

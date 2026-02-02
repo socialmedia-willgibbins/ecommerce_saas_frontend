@@ -28,12 +28,11 @@ type Category = {
 };
 
 interface ProductData {
-  category: { category_code: string; name: string; description: string };
+  category_code: string;
   product_code: string;
   name: string;
   description: string;
   price: string;
-  discount: string;
   stock: string;
 }
 
@@ -41,7 +40,7 @@ type CategoryOption = { value: number | null; label: string };
 
 // --- Custom Styles for React Select (Zinc Theme) ---
 const customSelectStyles = (
-  isDarkMode: boolean
+  isDarkMode: boolean,
 ): StylesConfig<CategoryOption> => ({
   control: (provided, state) => ({
     ...provided,
@@ -95,22 +94,21 @@ const AddProduct: React.FC = () => {
     if (typeof window !== "undefined") {
       setIsDarkMode(
         document.documentElement.classList.contains("dark") ||
-          localStorage.getItem("theme") === "dark"
+          localStorage.getItem("theme") === "dark",
       );
     }
   }, []);
 
   const [categoriesList, setCategoriesList] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
-    null
+    null,
   );
   const [productData, setProductData] = useState<ProductData>({
-    category: { category_code: "", name: "", description: "" },
+    category_code: "",
     product_code: "",
     name: "",
     description: "",
     price: "",
-    discount: "",
     stock: "",
   });
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -130,13 +128,13 @@ const AddProduct: React.FC = () => {
         const categories = Array.isArray(data)
           ? data
           : Array.isArray(data?.results)
-          ? data.results
-          : [];
+            ? data.results
+            : [];
         if (!Array.isArray(categories))
           throw new Error("Invalid category format");
 
         const activeCategories = categories.filter(
-          (c: any) => c.is_active === true
+          (c: any) => c.is_active === true,
         );
         setCategoriesList(activeCategories);
       } catch (err: any) {
@@ -152,24 +150,23 @@ const AddProduct: React.FC = () => {
     fetchCategories();
   }, [access_token]);
 
-  const handleInputChange = (field: string, value: string) => {
-    // field is one of: 'product_code', 'name', 'description', 'price', 'discount', 'stock'
-    setProductData((prev) => ({ ...prev, [field]: value } as any));
+  const handleInputChange = (field: keyof ProductData, value: string) => {
+    setProductData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleCategorySelect = (
     option: SingleValue<CategoryOption>,
-    _actionMeta: ActionMeta<CategoryOption>
+    _actionMeta: ActionMeta<CategoryOption>,
   ) => {
     if (!option || option.value === null) {
       setSelectedCategory(null);
-      setProductData((prev) => ({ ...prev, category: { category_code: "", name: "", description: "" } }));
+      setProductData((prev) => ({ ...prev, category_code: "" }));
       return;
     }
     const cat = categoriesList.find((c) => c.category_id === option.value);
     if (cat) {
       setSelectedCategory(cat);
-      setProductData((prev) => ({ ...prev, category: { category_code: cat.category_code, name: cat.name, description: cat.description } }));
+      setProductData((prev) => ({ ...prev, category_code: cat.category_code }));
     }
   };
 
@@ -213,8 +210,8 @@ const AddProduct: React.FC = () => {
   const uploadImage = async (product_id: string) => {
     if (!selectedImage) return;
     const formData = new FormData();
-    formData.append("normal_image", selectedImage); // Changed from "image" to "normal_image"
-    formData.append("product_id", product_id);
+    formData.append("normal_image", selectedImage);
+    formData.append("product", product_id);
     await axios.post(`${domainUrl}products/uploads/`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -225,12 +222,11 @@ const AddProduct: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const { product_code, name, description, price, stock, category } = productData;
+    const { category_code, product_code, name, description, price, stock } =
+      productData;
 
     if (
-      !category?.category_code ||
-      !category?.name ||
-      !category?.description ||
+      !category_code ||
       !product_code ||
       !name ||
       !description ||
@@ -248,29 +244,14 @@ const AddProduct: React.FC = () => {
       toast.error("Stock must be a non-negative number");
       return;
     }
-    // Validate discount if provided
-    if (
-      productData.discount &&
-      (isNaN(+productData.discount) || Number(productData.discount) < 0 || Number(productData.discount) > 100)
-    ) {
-      toast.error("Discount percentage must be between 0 and 100");
-      return;
-    }
 
     setLoading(true);
     try {
       const body = {
-        category: category,
-        product_code,
-        name,
-        description,
+        ...productData,
         price: Number(price),
-        discount_percentage: Number(productData.discount),
         stock: Number(stock),
       };
-
-      console.log("Submitting Product:", body);
-      
       const resp = await axios.post(
         `${domainUrl}products/productdetail/`,
         body,
@@ -279,7 +260,7 @@ const AddProduct: React.FC = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${access_token}`,
           },
-        }
+        },
       );
 
       if (selectedImage) {
@@ -287,12 +268,11 @@ const AddProduct: React.FC = () => {
       }
 
       setProductData({
-        category: { category_code: "", name: "", description: "" },
+        category_code: "",
         product_code: "",
         name: "",
         description: "",
         price: "",
-        discount: "",
         stock: "",
       });
       setSelectedImage(null);
@@ -310,7 +290,7 @@ const AddProduct: React.FC = () => {
       toast.error(
         err?.response?.data?.detail ||
           err?.response?.data?.product_code ||
-          "Something went wrong."
+          "Something went wrong.",
       );
     } finally {
       setLoading(false);
@@ -484,24 +464,8 @@ const AddProduct: React.FC = () => {
                   </div>
                 </div>
 
-              {/* Description */}
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-                    Description <span className="text-red-500">*</span>
-                  </label>
-                  <textarea
-                    value={productData.description}
-                    onChange={(e) =>
-                      handleInputChange("description", e.target.value)
-                    }
-                    rows={4}
-                    className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-white text-sm rounded-xl p-4 outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent transition-all placeholder:text-zinc-400 resize-none"
-                    placeholder="Describe the product features, specs, and benefits..."
-                  />
-                </div>
-
-                {/* Price, Discount & Stock */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Price & Stock */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* <InputField
                     label="Price"
                     id="price"
@@ -574,34 +538,23 @@ const AddProduct: React.FC = () => {
                       />
                     </div>
                   </div>
-
-                  {/* Discount */}
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-                      Discount %
-                    </label>
-                    <div className="relative group">
-                      <input
-                        type="number"
-                        id="discount"
-                        placeholder="0"
-                        min={0}
-                        max={100}
-                        step={1}
-                        value={productData.discount}
-                        onChange={(e: any) =>
-                          handleInputChange("discount", e.target.value)
-                        }
-                        className={`w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-white text-sm rounded-xl py-3 outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent transition-all placeholder:text-zinc-400 px-4 pr-4`}
-                      />
-                    </div>
-                  </div>
-
-
-
                 </div>
 
-             
+                {/* Description */}
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                    Description <span className="text-red-500">*</span>
+                  </label>
+                  <textarea
+                    value={productData.description}
+                    onChange={(e) =>
+                      handleInputChange("description", e.target.value)
+                    }
+                    rows={4}
+                    className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-white text-sm rounded-xl p-4 outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent transition-all placeholder:text-zinc-400 resize-none"
+                    placeholder="Describe the product features, specs, and benefits..."
+                  />
+                </div>
 
                 {/* Image Upload */}
                 <div className="space-y-2">

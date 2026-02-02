@@ -28,8 +28,6 @@ const RequireAuth = ({ children, path }: RequireAuthProps) => {
       "/list-product",
       "/delete-product",
       "/list-orders",
-      "/settlement-history",
-      "/bank-details",
     ],
   };
 

@@ -19,22 +19,12 @@ import UpdateProduct from "../../pages/UpdateProduct";
 import ListProduct from "../../pages/ListProduct";
 import DeleteProduct from "../../pages/DeleteProduct";
 import ListAllOrders from "../../pages/ListAllOrders";
-import AdminSettlementHistory from "../../pages/AdminSettlementHistory";
-import AdminBankDetails from "../../pages/AdminBankDetails";
 import Layout from "../../components/Layout";
-import RootRedirect from "../../components/RootRedirect";
-
-// Owner Pages
-import OwnerLogin from "../../pages/owner/OwnerLogin";
-import OwnerDashboard from "../../pages/owner/OwnerDashboard";
-import OwnerPaymentHistory from "../../pages/owner/OwnerPaymentHistory";
-import OwnerAdminList from "../../pages/owner/OwnerAdminList";
-import OwnerBankVerification from "../../pages/owner/OwnerBankVerification";
 
 
 const Router = () => {
   let pathElementMapping: Record<string, JSX.Element> = {
-    "/dashboard": <AdminDashboard />,
+    "/dashboard": <Layout/>,
     "/profile-page": <ProfilePage />,
     "/admin-home": <AdminDashboard />,
     "/add-user": <AddUser />,
@@ -48,8 +38,6 @@ const Router = () => {
     "/list-product": <ListProduct />,
     "/delete-product": <DeleteProduct />,
     "/list-orders": <ListAllOrders />,
-    "/settlement-history": <AdminSettlementHistory />,
-    "/bank-details": <AdminBankDetails />,
     
     
   };
@@ -65,9 +53,6 @@ const Router = () => {
     <>
       <BrowserRouter>
         <Routes>
-          {/* Root route - redirect based on authentication */}
-          <Route path="/" element={<RootRedirect />} />
-          
           <Route
             path="/login"
             element={
@@ -84,13 +69,6 @@ const Router = () => {
               </PublicAuth>
             }
           />
-
-          {/* Owner Routes - Public Login, Protected Dashboard */}
-          <Route path="/owner/login" element={<OwnerLogin />} />
-          <Route path="/owner/dashboard" element={<OwnerDashboard />} />
-          <Route path="/owner/payment-history" element={<OwnerPaymentHistory />} />
-          <Route path="/owner/admins" element={<OwnerAdminList />} />
-          <Route path="/owner/bank-verification" element={<OwnerBankVerification />} />
 
           {TheRoute ? (
             <Route path="/" element={<Layout />}>

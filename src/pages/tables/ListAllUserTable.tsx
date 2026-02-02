@@ -8,14 +8,18 @@ import { useNavigate } from "react-router";
 import {
   MagnifyingGlassIcon,
   ArrowPathIcon,
+
   UserPlusIcon,
   EnvelopeIcon,
   PhoneIcon,
   ShieldCheckIcon,
+
   XCircleIcon,
   ChevronUpIcon,
   ChevronDownIcon,
+
   MapPinIcon,
+
 } from "@heroicons/react/24/outline";
 
 // --- Types ---
@@ -41,10 +45,8 @@ type SortConfig = {
 // --- Styling Constants ---
 const roleStyles: Record<string, string> = {
   admin: "bg-zinc-900 text-white dark:bg-white dark:text-black border-zinc-900",
-  staff:
-    "bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-200 border-zinc-200 dark:border-zinc-700",
-  customer:
-    "bg-white text-zinc-600 dark:bg-zinc-900 dark:text-zinc-400 border-zinc-200 dark:border-zinc-800",
+  staff: "bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-200 border-zinc-200 dark:border-zinc-700",
+  customer: "bg-white text-zinc-600 dark:bg-zinc-900 dark:text-zinc-400 border-zinc-200 dark:border-zinc-800",
   user: "bg-white text-zinc-500 border-zinc-100",
 };
 
@@ -56,7 +58,7 @@ const roleStyles: Record<string, string> = {
 export const ListAllUserTable = () => {
   const access_token = localStorage.getItem("access_token");
   const navigate = useNavigate();
-
+  
   // --- State ---
   const [users, setUsers] = useState<User[]>([]);
   const [total, setTotal] = useState(0);
@@ -67,12 +69,9 @@ export const ListAllUserTable = () => {
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
-  const [sortConfig, setSortConfig] = useState<SortConfig>({
-    key: "user_id",
-    direction: "asc",
-  });
+  const [sortConfig, setSortConfig] = useState<SortConfig>({ key: "user_id", direction: "asc" });
   const [filters, setFilters] = useState({ role: "", status: "" });
-  const [showFilters] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
 
   // --- Logic ---
   const fetchUsers = async () => {
@@ -93,15 +92,13 @@ export const ListAllUserTable = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${access_token}`,
           },
-        },
+        }
       );
       // Mock data injection preserved
-
+     
       console.log(response.data.results);
 
-      const filteredData = response.data.results.filter(
-        (user) => user.role == "customer" || user.role == "staff",
-      );
+      const filteredData = response.data.results.filter(user => (user.role == 'customer'|| user.role == 'staff' ));
 
       setUsers(filteredData);
       setTotal(filteredData.length);
@@ -119,40 +116,22 @@ export const ListAllUserTable = () => {
     }
   };
 
-  useEffect(() => {
-    fetchUsers();
-  }, [page, rowsPerPage, search, filters]);
+  useEffect(() => { fetchUsers(); }, [page, rowsPerPage, search, filters]);
 
-  const handleRefresh = () => {
-    setSelectedUsers([]);
-    fetchUsers();
-  };
+  const handleRefresh = () => { setSelectedUsers([]); fetchUsers(); };
   const handleChangePage = (newPage: number) => setPage(newPage);
-  const handleChangeRowsPerPage = (value: number) => {
-    setRowsPerPage(value);
-    setPage(0);
-  };
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    setPage(0);
-    setSearch(searchInput.trim());
+  const handleChangeRowsPerPage = (value: number) => { setRowsPerPage(value); setPage(0); };
+  const handleSearch = (e: React.FormEvent) => { e.preventDefault(); setPage(0); setSearch(searchInput.trim()); };
+  
+  const handleSort = (key: keyof User) => {
+    setSortConfig({ key, direction: sortConfig.key === key && sortConfig.direction === "asc" ? "desc" : "asc" });
   };
 
-  const handleSort = (key: keyof User) => {
-    setSortConfig({
-      key,
-      direction:
-        sortConfig.key === key && sortConfig.direction === "asc"
-          ? "desc"
-          : "asc",
-    });
-  };
+
 
   // const handleExport = () => toast.success("Exporting data...", { position: "top-center" });
   const handleBulkAction = (action: string) => {
-    toast.success(`${action} ${selectedUsers.length} users`, {
-      position: "top-center",
-    });
+    toast.success(`${action} ${selectedUsers.length} users`, { position: "top-center" });
     setSelectedUsers([]);
   };
 
@@ -169,17 +148,17 @@ export const ListAllUserTable = () => {
   return (
     <div className="min-h-screen bg-gray-50 rounded-2xl dark:bg-black p-4 sm:p-6 lg:p-8 transition-colors duration-500">
       <div className="max-w-[1600px] mx-auto">
+        
         {/* --- Header Section --- */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-lg font-bold text-zinc-900 dark:text-white tracking-tight">
-              Directory
-            </h1>
+            <h1 className="text-lg font-bold text-zinc-900 dark:text-white tracking-tight">Directory</h1>
             <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
               Manage user access, roles, and status.
             </p>
           </div>
           <div className="flex items-center gap-3">
+         
             <button
               onClick={() => navigate("/add-user")}
               className="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold text-white bg-black dark:bg-white dark:text-black rounded-lg hover:opacity-90 transition-all shadow-lg shadow-zinc-200 dark:shadow-none"
@@ -193,11 +172,9 @@ export const ListAllUserTable = () => {
         {/* --- Toolbar Section --- */}
         <div className="bg-white dark:bg-zinc-950 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm mb-6 overflow-hidden">
           <div className="p-4 flex flex-col lg:flex-row gap-4 justify-between">
+            
             {/* Search */}
-            <form
-              onSubmit={handleSearch}
-              className="flex-1 max-w-lg relative group"
-            >
+            <form onSubmit={handleSearch} className="flex-1 max-w-lg relative group">
               <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-400 group-focus-within:text-black dark:group-focus-within:text-white transition-colors" />
               <input
                 type="text"
@@ -225,15 +202,13 @@ export const ListAllUserTable = () => {
                   <span className="flex h-2 w-2 rounded-full bg-black dark:bg-white" />
                 )}
               </button> */}
-
+              
               <button
                 onClick={handleRefresh}
                 className="p-2.5 text-zinc-500 hover:text-black dark:hover:text-white bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg transition-colors"
                 title="Refresh List"
               >
-                <ArrowPathIcon
-                  className={`h-5 w-5 ${loading ? "animate-spin" : ""}`}
-                />
+                <ArrowPathIcon className={`h-5 w-5 ${loading ? "animate-spin" : ""}`} />
               </button>
             </div>
           </div>
@@ -243,14 +218,10 @@ export const ListAllUserTable = () => {
             <div className="px-4 pb-4 pt-0 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/20">
               <div className="flex flex-wrap items-end gap-4 mt-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider">
-                    Role
-                  </label>
+                  <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Role</label>
                   <select
                     value={filters.role}
-                    onChange={(e) =>
-                      setFilters({ ...filters, role: e.target.value })
-                    }
+                    onChange={(e) => setFilters({ ...filters, role: e.target.value })}
                     className="block w-40 text-sm bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-black dark:focus:ring-white"
                   >
                     <option value="">All Roles</option>
@@ -260,14 +231,10 @@ export const ListAllUserTable = () => {
                   </select>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider">
-                    Status
-                  </label>
+                  <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Status</label>
                   <select
                     value={filters.status}
-                    onChange={(e) =>
-                      setFilters({ ...filters, status: e.target.value })
-                    }
+                    onChange={(e) => setFilters({ ...filters, status: e.target.value })}
                     className="block w-40 text-sm bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-black dark:focus:ring-white"
                   >
                     <option value="">All Status</option>
@@ -290,34 +257,17 @@ export const ListAllUserTable = () => {
           {/* Bulk Selection Bar */}
           {selectedUsers.length > 0 && (
             <div className="bg-zinc-900 dark:bg-zinc-100 px-4 py-3 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <span className="flex items-center justify-center bg-white dark:bg-black text-black dark:text-white h-5 w-5 rounded text-xs font-bold">
-                  {selectedUsers.length}
-                </span>
-                <span className="text-sm font-medium text-white dark:text-black">
-                  Selected
-                </span>
-              </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => handleBulkAction("Activate")}
-                  className="px-3 py-1.5 text-xs font-bold bg-white/10 dark:bg-black/10 text-white dark:text-black rounded hover:bg-white/20 dark:hover:bg-black/20 transition-colors"
-                >
-                  Activate
-                </button>
-                <button
-                  onClick={() => handleBulkAction("Delete")}
-                  className="px-3 py-1.5 text-xs font-bold bg-red-500/20 text-red-400 dark:text-red-600 rounded hover:bg-red-500/30 transition-colors"
-                >
-                  Delete
-                </button>
-                <button
-                  onClick={() => setSelectedUsers([])}
-                  className="px-3 py-1.5 text-xs font-bold text-zinc-400 hover:text-white dark:hover:text-black transition-colors"
-                >
-                  Cancel
-                </button>
-              </div>
+               <div className="flex items-center gap-3">
+                  <span className="flex items-center justify-center bg-white dark:bg-black text-black dark:text-white h-5 w-5 rounded text-xs font-bold">
+                     {selectedUsers.length}
+                  </span>
+                  <span className="text-sm font-medium text-white dark:text-black">Selected</span>
+               </div>
+               <div className="flex gap-2">
+                  <button onClick={() => handleBulkAction("Activate")} className="px-3 py-1.5 text-xs font-bold bg-white/10 dark:bg-black/10 text-white dark:text-black rounded hover:bg-white/20 dark:hover:bg-black/20 transition-colors">Activate</button>
+                  <button onClick={() => handleBulkAction("Delete")} className="px-3 py-1.5 text-xs font-bold bg-red-500/20 text-red-400 dark:text-red-600 rounded hover:bg-red-500/30 transition-colors">Delete</button>
+                  <button onClick={() => setSelectedUsers([])} className="px-3 py-1.5 text-xs font-bold text-zinc-400 hover:text-white dark:hover:text-black transition-colors">Cancel</button>
+               </div>
             </div>
           )}
         </div>
@@ -358,15 +308,9 @@ export const ListAllUserTable = () => {
                       <div className="flex items-center gap-1">
                         {label}
                         <span className="text-zinc-300 group-hover:text-zinc-500">
-                          {sortConfig.key === key ? (
-                            sortConfig.direction === "asc" ? (
-                              <ChevronUpIcon className="h-3 w-3" />
-                            ) : (
-                              <ChevronDownIcon className="h-3 w-3" />
-                            )
-                          ) : (
-                            <div className="h-3 w-3" />
-                          )}
+                           {sortConfig.key === key ? (
+                             sortConfig.direction === "asc" ? <ChevronUpIcon className="h-3 w-3" /> : <ChevronDownIcon className="h-3 w-3" />
+                           ) : <div className="h-3 w-3" />}
                         </span>
                       </div>
                     </th>
@@ -379,33 +323,27 @@ export const ListAllUserTable = () => {
                   <tr>
                     <td colSpan={7} className="px-6 py-12 text-center">
                       <ArrowPathIcon className="h-8 w-8 mx-auto text-zinc-300 animate-spin" />
-                      <p className="mt-2 text-sm text-zinc-500">
-                        Loading directory...
-                      </p>
+                      <p className="mt-2 text-sm text-zinc-500">Loading directory...</p>
                     </td>
                   </tr>
                 ) : sortedUsers.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="px-6 py-12 text-center">
                       <div className="h-12 w-12 mx-auto bg-zinc-50 dark:bg-zinc-900 rounded-full flex items-center justify-center mb-3">
-                        <MagnifyingGlassIcon className="h-6 w-6 text-zinc-400" />
+                         <MagnifyingGlassIcon className="h-6 w-6 text-zinc-400" />
                       </div>
-                      <p className="text-sm font-medium text-zinc-900 dark:text-white">
-                        No users found
-                      </p>
-                      <p className="text-xs text-zinc-500 mt-1">
-                        Try adjusting your filters or search terms.
-                      </p>
+                      <p className="text-sm font-medium text-zinc-900 dark:text-white">No users found</p>
+                      <p className="text-xs text-zinc-500 mt-1">Try adjusting your filters or search terms.</p>
                     </td>
                   </tr>
                 ) : (
                   sortedUsers.map((user) => (
-                    <tr
-                      key={user.user_id}
+                    <tr 
+                      key={user.user_id} 
                       className={`group transition-colors ${
-                        selectedUsers.includes(user.user_id)
-                          ? "bg-zinc-50 dark:bg-zinc-900/50"
-                          : "hover:bg-zinc-50/50 dark:hover:bg-zinc-900/30"
+                        selectedUsers.includes(user.user_id) 
+                        ? "bg-zinc-50 dark:bg-zinc-900/50" 
+                        : "hover:bg-zinc-50/50 dark:hover:bg-zinc-900/30"
                       }`}
                     >
                       <td className="px-6 py-4">
@@ -416,7 +354,7 @@ export const ListAllUserTable = () => {
                           className="h-4 w-4 rounded border-zinc-300 text-black focus:ring-black dark:border-zinc-700 dark:bg-zinc-800 dark:checked:bg-white"
                         /> */}
                       </td>
-
+                      
                       {/* User Profile Cell */}
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-4">
@@ -424,30 +362,21 @@ export const ListAllUserTable = () => {
                             {user.username.charAt(0).toUpperCase()}
                           </div>
                           <div>
-                            <p className="text-sm font-bold text-zinc-900 dark:text-white">
-                              {user.username}
-                            </p>
+                            <p className="text-sm font-bold text-zinc-900 dark:text-white">{user.username}</p>
                             <div className="flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-                              <EnvelopeIcon className="h-3 w-3" />
-                              {user.email}
+                               <EnvelopeIcon className="h-3 w-3" />
+                               {user.email}
                             </div>
-                            <p className="text-[10px] text-zinc-400 font-mono mt-0.5">
-                              ID: {user.user_id}
-                            </p>
+                            <p className="text-[10px] text-zinc-400 font-mono mt-0.5">ID: {user.user_id}</p>
                           </div>
                         </div>
                       </td>
 
                       {/* Role Cell */}
                       <td className="px-6 py-4">
-                        <span
-                          className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold border ${roleStyles[user.role] || roleStyles.user}`}
-                        >
-                          {user.role === "admin" && (
-                            <ShieldCheckIcon className="h-3 w-3 mr-1" />
-                          )}
-                          {user.role.charAt(0).toUpperCase() +
-                            user.role.slice(1)}
+                        <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold border ${roleStyles[user.role] || roleStyles.user}`}>
+                           {user.role === 'admin' && <ShieldCheckIcon className="h-3 w-3 mr-1" />}
+                           {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
                         </span>
                       </td>
 
@@ -464,13 +393,9 @@ export const ListAllUserTable = () => {
                         <div className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
                           <MapPinIcon className="h-4 w-4 text-zinc-400" />
                           {user.default_shipping_address ? (
-                            <span className="font-mono">
-                              {user.default_shipping_address}
-                            </span>
+                            <span className="font-mono">{user.default_shipping_address}</span>
                           ) : (
-                            <span className="font-mono text-zinc-400">
-                              No Address
-                            </span>
+                            <span className="font-mono text-zinc-400">No Address</span>
                           )}
                         </div>
                       </td>
@@ -509,61 +434,39 @@ export const ListAllUserTable = () => {
 
           {/* --- Pagination Footer --- */}
           <div className="px-6 py-4 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="text-xs text-zinc-500 dark:text-zinc-400 flex items-center gap-2">
-                <span>
-                  Showing{" "}
-                  <span className="font-bold text-zinc-900 dark:text-white">
-                    {Math.min(rowsPerPage * page + 1, total)}
-                  </span>{" "}
-                  to{" "}
-                  <span className="font-bold text-zinc-900 dark:text-white">
-                    {Math.min(rowsPerPage * (page + 1), total)}
-                  </span>{" "}
-                  of{" "}
-                  <span className="font-bold text-zinc-900 dark:text-white">
-                    {total}
-                  </span>{" "}
-                  users
-                </span>
-                <select
-                  value={rowsPerPage}
-                  onChange={(e) =>
-                    handleChangeRowsPerPage(parseInt(e.target.value))
-                  }
-                  className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs rounded px-2 py-1 outline-none focus:ring-1 focus:ring-black dark:focus:ring-white"
-                >
-                  {[10, 25, 50, 100].map((opt) => (
-                    <option key={opt} value={opt}>
-                      Show {opt}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={() => handleChangePage(page - 1)}
-                  disabled={page === 0 || loading}
-                  className="px-3 py-1.5 text-xs font-medium border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-800 disabled:opacity-50 transition-colors"
-                >
-                  Previous
-                </button>
-                {/* Simplified Pagination Numbers */}
-                <div className="flex items-center gap-1 px-2">
-                  <span className="text-xs font-mono text-zinc-900 dark:text-white">
-                    Page {page + 1} of {totalPages}
-                  </span>
+             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="text-xs text-zinc-500 dark:text-zinc-400 flex items-center gap-2">
+                   <span>Showing <span className="font-bold text-zinc-900 dark:text-white">{Math.min(rowsPerPage * page + 1, total)}</span> to <span className="font-bold text-zinc-900 dark:text-white">{Math.min(rowsPerPage * (page + 1), total)}</span> of <span className="font-bold text-zinc-900 dark:text-white">{total}</span> users</span>
+                   <select
+                      value={rowsPerPage}
+                      onChange={(e) => handleChangeRowsPerPage(parseInt(e.target.value))}
+                      className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs rounded px-2 py-1 outline-none focus:ring-1 focus:ring-black dark:focus:ring-white"
+                   >
+                      {[10, 25, 50, 100].map(opt => <option key={opt} value={opt}>Show {opt}</option>)}
+                   </select>
                 </div>
-                <button
-                  onClick={() => handleChangePage(page + 1)}
-                  disabled={page + 1 >= totalPages || loading}
-                  className="px-3 py-1.5 text-xs font-medium border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-800 disabled:opacity-50 transition-colors"
-                >
-                  Next
-                </button>
-              </div>
-            </div>
+
+                <div className="flex items-center gap-1">
+                   <button
+                      onClick={() => handleChangePage(page - 1)}
+                      disabled={page === 0 || loading}
+                      className="px-3 py-1.5 text-xs font-medium border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-800 disabled:opacity-50 transition-colors"
+                   >
+                      Previous
+                   </button>
+                   {/* Simplified Pagination Numbers */}
+                   <div className="flex items-center gap-1 px-2">
+                      <span className="text-xs font-mono text-zinc-900 dark:text-white">Page {page + 1} of {totalPages}</span>
+                   </div>
+                   <button
+                      onClick={() => handleChangePage(page + 1)}
+                      disabled={page + 1 >= totalPages || loading}
+                      className="px-3 py-1.5 text-xs font-medium border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-800 disabled:opacity-50 transition-colors"
+                   >
+                      Next
+                   </button>
+                </div>
+             </div>
           </div>
         </div>
       </div>

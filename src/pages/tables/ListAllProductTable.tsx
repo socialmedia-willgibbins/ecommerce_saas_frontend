@@ -199,12 +199,12 @@ const EditProductModal = ({
   loading,
 }: any) => {
   // Theme Detection for styles
-  const [, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   useEffect(() => {
     if (typeof window !== "undefined") {
       setIsDarkMode(
         document.documentElement.classList.contains("dark") ||
-          localStorage.getItem("theme") === "dark",
+          localStorage.getItem("theme") === "dark"
       );
     }
   }, []);
@@ -615,20 +615,21 @@ export const ListAllProductTable = () => {
     setLoading(true);
     setError(null);
     try {
-      // Backend automatically filters by admin role
-      // Admin users will only see their own products
       const response = await axios.get<ProductApiResponse>(
-        `${domainUrl}products/productdetail/?page=1&page_size=1000000&is_active=true`,
+        `${domainUrl}products/productdetail/`,
         {
+          params: {
+            is_active: true,
+            page: page + 1,
+            page_size: rowsPerPage,
+            search: search || undefined,
+          },
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${access_token}`,
           },
-        },
+        }
       );
-
-      console.log();
-
       setProducts(response.data.results);
       setTotalCount(response.data.count);
     } catch (err: any) {
@@ -674,7 +675,7 @@ export const ListAllProductTable = () => {
   const handleEditSave = async (
     id: number,
     data: any,
-    imageFile: File | null,
+    imageFile: File | null
   ) => {
     setActionLoading(true);
     try {
@@ -716,7 +717,7 @@ export const ListAllProductTable = () => {
         `${domainUrl}products/productdetail/${selectedProduct.product_id}/`,
         {
           headers: { Authorization: `Bearer ${access_token}` },
-        },
+        }
       );
       toast.success("Product deleted");
       setIsDeleteOpen(false);
@@ -910,8 +911,8 @@ export const ListAllProductTable = () => {
                               row.stock > 10
                                 ? "bg-emerald-500"
                                 : row.stock > 0
-                                  ? "bg-amber-500"
-                                  : "bg-red-500"
+                                ? "bg-amber-500"
+                                : "bg-red-500"
                             }`}
                           />
                           <span

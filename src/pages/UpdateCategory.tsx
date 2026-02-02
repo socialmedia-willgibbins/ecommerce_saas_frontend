@@ -10,6 +10,7 @@ import {
   ArrowLeftIcon,
   PhotoIcon,
   ArrowPathIcon,
+  CheckCircleIcon,
   XCircleIcon,
   CloudArrowUpIcon,
   PencilSquareIcon,
@@ -203,7 +204,7 @@ const UpdateCategory: React.FC = () => {
     setDragActive(false);
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       const file = e.dataTransfer.files[0];
-      if (file.size > 2048576) {
+      if (file.size > 1024 * 1024) {
         setError("Image size must be less than 1MB.");
         return;
       }
@@ -216,21 +217,19 @@ const UpdateCategory: React.FC = () => {
     if (!selectedImage) return;
 
     try {
-      // Check if category already has an image
-      const existingImage = selectedCategory?.images?.find(
-        (img) => img.type === "normal",
-      );
-
-      if (existingImage) {
-        console.log("inside existingggg");
-
-        // UPDATE existing image - use "image" field
+      // Check if category already has images
+      const category = categories.find(cat => cat.category_id === categoryId);
+      const existingImages = category?.images || [];
+      
+      if (existingImages.length > 0) {
+        // Update existing image - use 'image' field for PUT
+        const imageId = existingImages[existingImages.length - 1].id;
         const formDataImg = new FormData();
-        formDataImg.append("category_id", categoryId.toString());
-        formDataImg.append("image", selectedImage); // PUT expects "image"
-
+        formDataImg.append("category", categoryId.toString());
+        formDataImg.append("image", selectedImage);
+        
         const imageResp = await axios.put(
-          `${domainUrl}products/uploads/${existingImage.id}/`,
+          `${domainUrl}products/uploads/${imageId}/`,
           formDataImg,
           {
             headers: {
@@ -243,13 +242,11 @@ const UpdateCategory: React.FC = () => {
           toast.success("Image updated.");
         }
       } else {
-        console.log("inside neww");
-
-        // CREATE new image - use "normal_image" field
+        // Create new image - use 'normal_image' field for POST
         const formDataImg = new FormData();
-        formDataImg.append("category_id", categoryId.toString());
-        formDataImg.append("normal_image", selectedImage); // POST expects "normal_image"
-
+        formDataImg.append("normal_image", selectedImage);
+        formDataImg.append("category", categoryId.toString());
+        
         const imageResp = await axios.post(
           `${domainUrl}products/uploads/`,
           formDataImg,
@@ -261,7 +258,7 @@ const UpdateCategory: React.FC = () => {
           },
         );
         if (imageResp.status === 201) {
-          toast.success("Image added.");
+          toast.success("Image uploaded.");
         }
       }
     } catch (err: any) {
