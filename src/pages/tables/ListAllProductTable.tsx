@@ -204,7 +204,7 @@ const EditProductModal = ({
     if (typeof window !== "undefined") {
       setIsDarkMode(
         document.documentElement.classList.contains("dark") ||
-          localStorage.getItem("theme") === "dark"
+          localStorage.getItem("theme") === "dark",
       );
     }
   }, []);
@@ -624,11 +624,11 @@ export const ListAllProductTable = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${access_token}`,
           },
-        }
+        },
       );
 
       console.log();
-      
+
       setProducts(response.data.results);
       setTotalCount(response.data.count);
     } catch (err: any) {
@@ -674,7 +674,7 @@ export const ListAllProductTable = () => {
   const handleEditSave = async (
     id: number,
     data: any,
-    imageFile: File | null
+    imageFile: File | null,
   ) => {
     setActionLoading(true);
     try {
@@ -716,7 +716,7 @@ export const ListAllProductTable = () => {
         `${domainUrl}products/productdetail/${selectedProduct.product_id}/`,
         {
           headers: { Authorization: `Bearer ${access_token}` },
-        }
+        },
       );
       toast.success("Product deleted");
       setIsDeleteOpen(false);
@@ -910,8 +910,8 @@ export const ListAllProductTable = () => {
                               row.stock > 10
                                 ? "bg-emerald-500"
                                 : row.stock > 0
-                                ? "bg-amber-500"
-                                : "bg-red-500"
+                                  ? "bg-amber-500"
+                                  : "bg-red-500"
                             }`}
                           />
                           <span
