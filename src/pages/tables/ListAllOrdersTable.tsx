@@ -16,10 +16,8 @@ import {
   ChevronUpIcon,
   TruckIcon,
   MapPinIcon,
-  CreditCardIcon,
   CubeIcon,
   XCircleIcon,
-  EyeIcon,
 } from "@heroicons/react/24/outline";
 
 // --- Types ---
@@ -81,20 +79,6 @@ type Order = {
 };
 
 const statusOptions = ["Processing", "Shipped", "Delivered"];
-
-// --- Status Badge Component ---
-const _StatusBadge = ({ status }: { status: string }) => {
-  let colorClass = "bg-zinc-100 text-zinc-600 border-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:border-zinc-700"; // Default
-  if (status === "Processing") colorClass = "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800";
-  if (status === "Shipped") colorClass = "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800";
-  if (status === "Delivered") colorClass = "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800";
-
-  return (
-    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${colorClass}`}>
-      {status}
-    </span>
-  );
-};
 
 // --- Expandable Row Component ---
 const ExpandableRow: React.FC<{
