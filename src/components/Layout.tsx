@@ -58,7 +58,7 @@ export default function Layout() {
   const user_name = localStorage.getItem("user_name");
   
   // --- Theme State & Logic ---
-  const [darkMode, setDarkMode] = useState(() => {
+  const [darkMode] = useState(() => {
     if (typeof window !== "undefined") {
       return localStorage.getItem("theme") === "dark" || 
              (!localStorage.getItem("theme") && window.matchMedia("(prefers-color-scheme: dark)").matches);

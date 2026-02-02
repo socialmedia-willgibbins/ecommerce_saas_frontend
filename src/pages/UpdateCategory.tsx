@@ -10,7 +10,6 @@ import {
   ArrowLeftIcon,
   PhotoIcon,
   ArrowPathIcon,
-  CheckCircleIcon,
   XCircleIcon,
   CloudArrowUpIcon,
   PencilSquareIcon,

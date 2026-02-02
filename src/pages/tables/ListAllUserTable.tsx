@@ -71,7 +71,7 @@ export const ListAllUserTable = () => {
   const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: "user_id", direction: "asc" });
   const [filters, setFilters] = useState({ role: "", status: "" });
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFilters] = useState(false);
 
   // --- Logic ---
   const fetchUsers = async () => {

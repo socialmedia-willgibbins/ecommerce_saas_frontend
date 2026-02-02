@@ -16,10 +16,8 @@ import {
   ChevronUpIcon,
   TruckIcon,
   MapPinIcon,
-  CreditCardIcon,
   CubeIcon,
-  XCircleIcon,
-  EyeIcon,
+  XCircleIcon
 } from "@heroicons/react/24/outline";
 
 // --- Types ---

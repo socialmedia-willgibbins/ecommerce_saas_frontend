@@ -194,7 +194,7 @@
 // }
 
 
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   UsersIcon,
   CurrencyDollarIcon,
@@ -205,9 +205,7 @@ import {
   ArrowTrendingDownIcon,
   ArrowTrendingUpIcon,
   StarIcon,
-  CalendarDaysIcon,
-  SignalIcon,
-  BoltIcon
+  SignalIcon
 } from "@heroicons/react/24/outline";
 import {
   BarChart,
@@ -369,7 +367,7 @@ export default function AdminDashboard() {
                         />
                         <Tooltip content={<CustomTooltip />} cursor={{fill: 'transparent'}} />
                         <Bar dataKey="value" radius={[4, 4, 0, 0]} barSize={40}>
-                            {chartData.map((entry, index) => (
+                            {chartData.map((_entry, index) => (
                                 <Cell key={`cell-${index}`} className="fill-zinc-900 dark:fill-zinc-100 hover:opacity-80 transition-opacity" />
                             ))}
                         </Bar>
