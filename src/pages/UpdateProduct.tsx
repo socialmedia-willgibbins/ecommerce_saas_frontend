@@ -161,9 +161,9 @@ const UpdateProduct: React.FC = () => {
 
   const uploadImage = async (productId: number) => {
     if (!selectedImage) return;
-    
+
     const filtered = imageList.filter((img) => img.product === productId);
-    
+
     try {
       if (filtered.length > 0) {
         // Update existing image - use 'image' field for PUT
@@ -171,7 +171,7 @@ const UpdateProduct: React.FC = () => {
         const formDataImg = new FormData();
         formDataImg.append("product", String(productId));
         formDataImg.append("image", selectedImage);
-        
+
         await axios.put(`${domainUrl}products/uploads/${id}/`, formDataImg, {
           headers: {
             "Content-Type": "multipart/form-data",
@@ -183,7 +183,7 @@ const UpdateProduct: React.FC = () => {
         const formDataImg = new FormData();
         formDataImg.append("product", String(productId));
         formDataImg.append("normal_image", selectedImage);
-        
+
         await axios.post(`${domainUrl}products/uploads/`, formDataImg, {
           headers: {
             "Content-Type": "multipart/form-data",

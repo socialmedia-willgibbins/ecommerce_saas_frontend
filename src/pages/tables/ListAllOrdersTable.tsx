@@ -83,7 +83,7 @@ type Order = {
 const statusOptions = ["Processing", "Shipped", "Delivered"];
 
 // --- Status Badge Component ---
-const StatusBadge = ({ status }: { status: string }) => {
+const _StatusBadge = ({ status }: { status: string }) => {
   let colorClass = "bg-zinc-100 text-zinc-600 border-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:border-zinc-700"; // Default
   if (status === "Processing") colorClass = "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800";
   if (status === "Shipped") colorClass = "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800";

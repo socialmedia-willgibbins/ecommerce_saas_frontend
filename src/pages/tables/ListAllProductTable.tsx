@@ -199,7 +199,7 @@ const EditProductModal = ({
   loading,
 }: any) => {
   // Theme Detection for styles
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [, setIsDarkMode] = useState(false);
   useEffect(() => {
     if (typeof window !== "undefined") {
       setIsDarkMode(

@@ -10,7 +10,6 @@ import {
   ArrowLeftIcon,
   PhotoIcon,
   ArrowPathIcon,
-  CheckCircleIcon,
   XCircleIcon,
   CloudArrowUpIcon,
   PencilSquareIcon,
@@ -218,16 +217,16 @@ const UpdateCategory: React.FC = () => {
 
     try {
       // Check if category already has images
-      const category = categories.find(cat => cat.category_id === categoryId);
+      const category = categories.find((cat) => cat.category_id === categoryId);
       const existingImages = category?.images || [];
-      
+
       if (existingImages.length > 0) {
         // Update existing image - use 'image' field for PUT
         const imageId = existingImages[existingImages.length - 1].id;
         const formDataImg = new FormData();
         formDataImg.append("category", categoryId.toString());
         formDataImg.append("image", selectedImage);
-        
+
         const imageResp = await axios.put(
           `${domainUrl}products/uploads/${imageId}/`,
           formDataImg,
@@ -246,7 +245,7 @@ const UpdateCategory: React.FC = () => {
         const formDataImg = new FormData();
         formDataImg.append("normal_image", selectedImage);
         formDataImg.append("category", categoryId.toString());
-        
+
         const imageResp = await axios.post(
           `${domainUrl}products/uploads/`,
           formDataImg,
