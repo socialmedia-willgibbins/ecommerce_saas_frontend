@@ -686,17 +686,35 @@ export const ListAllProductTable = () => {
 
       // 2. Upload Image if changed
       if (imageFile) {
-        const formData = new FormData();
-        formData.append("image", imageFile);
-        formData.append("product", id.toString());
-        // Check if existing image needs update (PUT) or new upload (POST) - simplified to POST usually works for overwrite or add
-        // Ideally check backend logic. Assuming POST overwrites or adds new.
-        await axios.post(`${domainUrl}products/uploads/`, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${access_token}`,
-          },
-        });
+        const product = products.find(p => p.product_id === id);
+        const hasExistingImage = product?.images && product.images.length > 0;
+
+        if (hasExistingImage) {
+          // Update existing image - use PUT with 'image' field
+          const imageId = product!.images[0].id;
+          const formData = new FormData();
+          formData.append("image", imageFile);
+          formData.append("product", id.toString());
+          
+          await axios.put(`${domainUrl}products/uploads/${imageId}/`, formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${access_token}`,
+            },
+          });
+        } else {
+          // Create new image - use POST with 'normal_image' field
+          const formData = new FormData();
+          formData.append("normal_image", imageFile);
+          formData.append("product", id.toString());
+          
+          await axios.post(`${domainUrl}products/uploads/`, formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${access_token}`,
+            },
+          });
+        }
       }
 
       toast.success("Product updated successfully");

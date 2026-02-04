@@ -559,16 +559,35 @@ export const ListAllCategoryTable = () => {
 
       // 2. Upload Image (if changed)
       if (imageFile) {
-        const formData = new FormData();
-        formData.append("image", imageFile);
-        formData.append("category", id.toString());
-        formData.append("type", "normal");
-        await axios.post(`${domainUrl}products/uploads/`, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${access_token}`,
-          },
-        });
+        const category = categories.find(c => c.category_id === id);
+        const hasExistingImage = category?.images && category.images.length > 0;
+
+        if (hasExistingImage) {
+          // Update existing image - use PUT with 'image' field
+          const imageId = category!.images[0].id;
+          const formData = new FormData();
+          formData.append("image", imageFile);
+          formData.append("category", id.toString());
+          
+          await axios.put(`${domainUrl}products/uploads/${imageId}/`, formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${access_token}`,
+            },
+          });
+        } else {
+          // Create new image - use POST with 'normal_image' field
+          const formData = new FormData();
+          formData.append("normal_image", imageFile);
+          formData.append("category", id.toString());
+          
+          await axios.post(`${domainUrl}products/uploads/`, formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${access_token}`,
+            },
+          });
+        }
       }
 
       toast.success("Category updated successfully");
