@@ -213,19 +213,23 @@ const UpdateCategory: React.FC = () => {
 
   const uploadImage = async (categoryId: number) => {
     setError("");
-    if (!selectedImage) return;
+    if (!selectedImage) {
+      toast.error("Please select an image first");
+      return;
+    }
 
     try {
       // Check if category already has images
       const category = categories.find((cat) => cat.category_id === categoryId);
       const existingImages = category?.images || [];
 
+      const formDataImg = new FormData();
+      
       if (existingImages.length > 0) {
         // Update existing image - use 'image' field for PUT
         const imageId = existingImages[existingImages.length - 1].id;
-        const formDataImg = new FormData();
-        formDataImg.append("category", categoryId.toString());
         formDataImg.append("image", selectedImage);
+        formDataImg.append("category", categoryId.toString());
 
         const imageResp = await axios.put(
           `${domainUrl}products/uploads/${imageId}/`,
@@ -239,10 +243,10 @@ const UpdateCategory: React.FC = () => {
         );
         if (imageResp.status === 200) {
           toast.success("Image updated.");
+          setRefetching(!refetching); // Refresh categories
         }
       } else {
         // Create new image - use 'normal_image' field for POST
-        const formDataImg = new FormData();
         formDataImg.append("normal_image", selectedImage);
         formDataImg.append("category", categoryId.toString());
 
@@ -258,6 +262,7 @@ const UpdateCategory: React.FC = () => {
         );
         if (imageResp.status === 201) {
           toast.success("Image uploaded.");
+          setRefetching(!refetching); // Refresh categories
         }
       }
     } catch (err: any) {
