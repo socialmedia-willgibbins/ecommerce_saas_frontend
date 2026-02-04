@@ -12,12 +12,8 @@ import AddUser from "../../pages/AddUser";
 import ListUser from "../../pages/ListUser";
 import AddCategory from "../../pages/AddCategory";
 import ListCategory from "../../pages/ListCategory";
-import UpdateCategory from "../../pages/UpdateCategory";
-import DeleteCategory from "../../pages/DeleteCategory";
 import AddProduct from "../../pages/AddProduct";
-import UpdateProduct from "../../pages/UpdateProduct";
 import ListProduct from "../../pages/ListProduct";
-import DeleteProduct from "../../pages/DeleteProduct";
 import ListAllOrders from "../../pages/ListAllOrders";
 import Layout from "../../components/Layout";
 
@@ -31,12 +27,8 @@ const Router = () => {
     "/list-user": <ListUser />,
     "/add-category": <AddCategory />,
     "/list-category": <ListCategory />,
-    "/update-category": <UpdateCategory />,
-    "/delete-category": <DeleteCategory />,
     "/add-product": <AddProduct />,
-    "/update-product": <UpdateProduct />,
     "/list-product": <ListProduct />,
-    "/delete-product": <DeleteProduct />,
     "/list-orders": <ListAllOrders />,
     
     

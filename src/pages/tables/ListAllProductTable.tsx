@@ -682,17 +682,21 @@ export const ListAllProductTable = () => {
       // 1. Update Product Details
       // Remove category from payload if any field is empty
       const payload = { ...data };
-      if (!payload.category?.category_code || !payload.category?.name || !payload.category?.description) {
+      if (
+        !payload.category?.category_code ||
+        !payload.category?.name ||
+        !payload.category?.description
+      ) {
         delete payload.category;
       }
-      
+
       await axios.put(`${domainUrl}products/productdetail/${id}/`, payload, {
         headers: { Authorization: `Bearer ${access_token}` },
       });
 
       // 2. Upload Image if changed
       if (imageFile) {
-        const product = products.find(p => p.product_id === id);
+        const product = products.find((p) => p.product_id === id);
         const hasExistingImage = product?.images && product.images.length > 0;
 
         if (hasExistingImage) {
@@ -701,19 +705,23 @@ export const ListAllProductTable = () => {
           const formData = new FormData();
           formData.append("image", imageFile);
           formData.append("product", id.toString());
-          
-          await axios.put(`${domainUrl}products/uploads/${imageId}/`, formData, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              Authorization: `Bearer ${access_token}`,
+
+          await axios.put(
+            `${domainUrl}products/uploads/${imageId}/`,
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${access_token}`,
+              },
             },
-          });
+          );
         } else {
           // Create new image - use POST with 'normal_image' field
           const formData = new FormData();
           formData.append("normal_image", imageFile);
           formData.append("product", id.toString());
-          
+
           await axios.post(`${domainUrl}products/uploads/`, formData, {
             headers: {
               "Content-Type": "multipart/form-data",

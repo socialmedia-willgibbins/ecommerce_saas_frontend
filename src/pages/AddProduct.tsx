@@ -247,8 +247,22 @@ const AddProduct: React.FC = () => {
 
     setLoading(true);
     try {
+      // Validate category is selected
+      if (!selectedCategory) {
+        toast.error("Please select a category");
+        setLoading(false);
+        return;
+      }
+
       const body = {
-        ...productData,
+        category: {
+          category_code: selectedCategory.category_code,
+          name: selectedCategory.name,
+          description: selectedCategory.description,
+        },
+        product_code: productData.product_code,
+        name: productData.name,
+        description: productData.description,
         price: Number(price),
         stock: Number(stock),
       };

@@ -274,11 +274,24 @@ const UpdateProduct: React.FC = () => {
         formData.category.description !== initialFormData?.category.description;
 
       if (productFieldsChanged) {
+        // Validate category has all required fields
+        if (
+          !formData.category?.category_code ||
+          !formData.category?.name ||
+          !formData.category?.description
+        ) {
+          setError(
+            "Category information is incomplete. Please fill all category fields.",
+          );
+          setSubmitLoading(false);
+          return;
+        }
+
         const body = {
           category: {
-            category_code: formData.category?.category_code || "",
-            name: formData.category?.name || "",
-            description: formData.category?.description || "",
+            category_code: formData.category.category_code,
+            name: formData.category.name,
+            description: formData.category.description,
           },
           product_code: formData.product_code,
           name: formData.name,
