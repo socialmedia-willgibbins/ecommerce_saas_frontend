@@ -680,7 +680,13 @@ export const ListAllProductTable = () => {
     setActionLoading(true);
     try {
       // 1. Update Product Details
-      await axios.put(`${domainUrl}products/productdetail/${id}/`, data, {
+      // Remove category from payload if any field is empty
+      const payload = { ...data };
+      if (!payload.category?.category_code || !payload.category?.name || !payload.category?.description) {
+        delete payload.category;
+      }
+      
+      await axios.put(`${domainUrl}products/productdetail/${id}/`, payload, {
         headers: { Authorization: `Bearer ${access_token}` },
       });
 
