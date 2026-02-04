@@ -45,9 +45,9 @@ type Product = {
     description: string;
     category_code: string;
     is_active: boolean;
-    images: { url: string; type: string }[];
+    images: { id: number; url: string; type: string }[];
   };
-  images: { url: string; type: string }[];
+  images: { id: number; url: string; type: string }[];
 };
 
 type ProductApiResponse = {
