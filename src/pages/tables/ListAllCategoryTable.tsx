@@ -187,8 +187,13 @@ const EditModal = ({ isOpen, onClose, category, onSave, loading }: any) => {
     is_active: true,
   });
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [selectedCarouselImage, setSelectedCarouselImage] =
+    useState<File | null>(null);
   const [currentImageUrl, setCurrentImageUrl] = useState<string>("");
+  const [currentCarouselImageUrl, setCurrentCarouselImageUrl] =
+    useState<string>("");
   const [dragActive, setDragActive] = useState(false);
+  const [carouselDragActive, setCarouselDragActive] = useState(false);
 
   // Initialize form when category changes
   useEffect(() => {
@@ -203,8 +208,12 @@ const EditModal = ({ isOpen, onClose, category, onSave, loading }: any) => {
         category.images.find((i: any) => i.type === "normal")?.url ||
         category.images[0]?.url ||
         "";
+      const carouselImg =
+        category.images.find((i: any) => i.type === "carousel")?.url || "";
       setCurrentImageUrl(img);
+      setCurrentCarouselImageUrl(carouselImg);
       setSelectedImage(null);
+      setSelectedCarouselImage(null);
     }
   }, [category, isOpen]);
 
@@ -241,9 +250,50 @@ const EditModal = ({ isOpen, onClose, category, onSave, loading }: any) => {
     }
   };
 
+  // Carousel image handlers
+  const handleCarouselImageChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      if (file.size > 1024 * 1024) {
+        toast.error("Carousel image must be < 1MB");
+        return;
+      }
+      setSelectedCarouselImage(file);
+    }
+  };
+
+  const handleCarouselDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover")
+      setCarouselDragActive(true);
+    else if (e.type === "dragleave") setCarouselDragActive(false);
+  };
+
+  const handleCarouselDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCarouselDragActive(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      const file = e.dataTransfer.files[0];
+      if (file.size > 1024 * 1024) {
+        toast.error("Carousel image must be < 1MB");
+        return;
+      }
+      setSelectedCarouselImage(file);
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(category.category_id, formData, selectedImage);
+    onSave(
+      category.category_id,
+      formData,
+      selectedImage,
+      selectedCarouselImage,
+    );
   };
 
   // Determine which image to show in preview
@@ -387,46 +437,130 @@ const EditModal = ({ isOpen, onClose, category, onSave, loading }: any) => {
                         </div>
                       </div>
 
-                      {/* Drag & Drop Image */}
-                      <div className="space-y-2">
-                        <label className="block text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
-                          Category Image
-                        </label>
-                        <div
-                          className={`relative h-40 border-2 border-dashed rounded-xl flex flex-col items-center justify-center text-center transition-all cursor-pointer ${
-                            dragActive
-                              ? "border-black bg-zinc-50 dark:border-white dark:bg-zinc-900"
-                              : "border-zinc-200 dark:border-zinc-800 hover:border-zinc-400 dark:hover:border-zinc-600 bg-zinc-50/50 dark:bg-zinc-900/50"
-                          }`}
-                          onDragEnter={handleDrag}
-                          onDragLeave={handleDrag}
-                          onDragOver={handleDrag}
-                          onDrop={handleDrop}
-                          onClick={() =>
-                            document.getElementById("modal-cat-upload")?.click()
-                          }
-                        >
-                          <input
-                            type="file"
-                            id="modal-cat-upload"
-                            className="hidden"
-                            accept="image/*"
-                            onChange={handleImageChange}
-                            disabled={loading}
-                          />
-                          <div className="p-3 rounded-full bg-white dark:bg-zinc-800 shadow-sm mb-2">
-                            <CloudArrowUpIcon className="h-6 w-6 text-zinc-400" />
+                      {/* Image Uploads Section */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Category Image */}
+                        <div className="space-y-2">
+                          <label className="block text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
+                            Category Image
+                          </label>
+                          <div
+                            className={`relative h-32 border-2 border-dashed rounded-xl flex flex-col items-center justify-center text-center transition-all cursor-pointer ${
+                              dragActive
+                                ? "border-black bg-zinc-50 dark:border-white dark:bg-zinc-900"
+                                : "border-zinc-200 dark:border-zinc-800 hover:border-zinc-400 dark:hover:border-zinc-600 bg-zinc-50/50 dark:bg-zinc-900/50"
+                            }`}
+                            onDragEnter={handleDrag}
+                            onDragLeave={handleDrag}
+                            onDragOver={handleDrag}
+                            onDrop={handleDrop}
+                            onClick={() =>
+                              document
+                                .getElementById("modal-cat-upload")
+                                ?.click()
+                            }
+                          >
+                            <input
+                              type="file"
+                              id="modal-cat-upload"
+                              className="hidden"
+                              accept="image/*"
+                              onChange={handleImageChange}
+                              disabled={loading}
+                            />
+                            {selectedImage || currentImageUrl ? (
+                              <div className="flex flex-col items-center gap-2 px-3">
+                                <img
+                                  src={
+                                    selectedImage
+                                      ? URL.createObjectURL(selectedImage)
+                                      : currentImageUrl
+                                  }
+                                  alt="Category Preview"
+                                  className="h-16 w-16 object-cover rounded-lg border border-zinc-300 dark:border-zinc-700"
+                                />
+                                <p className="text-xs font-medium text-zinc-700 dark:text-zinc-300 truncate max-w-full">
+                                  {selectedImage
+                                    ? selectedImage.name
+                                    : "Current image"}
+                                </p>
+                              </div>
+                            ) : (
+                              <>
+                                <div className="p-2 rounded-full bg-white dark:bg-zinc-800 shadow-sm mb-1">
+                                  <CloudArrowUpIcon className="h-5 w-5 text-zinc-400" />
+                                </div>
+                                <p className="text-xs font-medium text-zinc-900 dark:text-white px-2">
+                                  Upload Image
+                                </p>
+                              </>
+                            )}
                           </div>
-                          <p className="text-sm font-medium text-zinc-900 dark:text-white">
-                            {selectedImage
-                              ? "File Selected"
-                              : "Click to upload or drag and drop"}
-                          </p>
-                          <p className="text-xs text-zinc-500 mt-1">
-                            {selectedImage
-                              ? selectedImage.name
-                              : "SVG, PNG, JPG (Max 1MB)"}
-                          </p>
+                        </div>
+
+                        {/* Carousel Image */}
+                        <div className="space-y-2">
+                          <label className="block text-xs font-bold uppercase tracking-widest text-indigo-500 dark:text-indigo-400">
+                            Carousel Image{" "}
+                            <span className="text-xs text-zinc-400 font-normal">
+                              (Optional)
+                            </span>
+                          </label>
+                          <div
+                            className={`relative h-32 border-2 border-dashed rounded-xl flex flex-col items-center justify-center text-center transition-all cursor-pointer ${
+                              carouselDragActive
+                                ? "border-indigo-600 bg-indigo-50 dark:border-indigo-400 dark:bg-indigo-950"
+                                : "border-indigo-200 dark:border-indigo-800 hover:border-indigo-400 dark:hover:border-indigo-600 bg-indigo-50/50 dark:bg-indigo-950/50"
+                            }`}
+                            onDragEnter={handleCarouselDrag}
+                            onDragLeave={handleCarouselDrag}
+                            onDragOver={handleCarouselDrag}
+                            onDrop={handleCarouselDrop}
+                            onClick={() =>
+                              document
+                                .getElementById("modal-carousel-upload")
+                                ?.click()
+                            }
+                          >
+                            <input
+                              type="file"
+                              id="modal-carousel-upload"
+                              className="hidden"
+                              accept="image/*"
+                              onChange={handleCarouselImageChange}
+                              disabled={loading}
+                            />
+                            {selectedCarouselImage ||
+                            currentCarouselImageUrl ? (
+                              <div className="flex flex-col items-center gap-2 px-3">
+                                <img
+                                  src={
+                                    selectedCarouselImage
+                                      ? URL.createObjectURL(
+                                          selectedCarouselImage,
+                                        )
+                                      : currentCarouselImageUrl
+                                  }
+                                  alt="Carousel Preview"
+                                  className="h-16 w-16 object-cover rounded-lg border-2 border-indigo-300 dark:border-indigo-700"
+                                />
+                                <p className="text-xs font-medium text-indigo-700 dark:text-indigo-300 truncate max-w-full">
+                                  {selectedCarouselImage
+                                    ? selectedCarouselImage.name
+                                    : "Current carousel"}
+                                </p>
+                              </div>
+                            ) : (
+                              <>
+                                <div className="p-2 rounded-full bg-white dark:bg-zinc-800 shadow-sm mb-1">
+                                  <CloudArrowUpIcon className="h-5 w-5 text-indigo-400" />
+                                </div>
+                                <p className="text-xs font-medium text-zinc-900 dark:text-white px-2">
+                                  Upload Carousel
+                                </p>
+                              </>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </form>
@@ -624,6 +758,7 @@ export const ListAllCategoryTable = () => {
     id: number,
     data: any,
     imageFile: File | null,
+    carouselFile: File | null,
   ) => {
     setActionLoading(true);
     try {
@@ -632,20 +767,19 @@ export const ListAllCategoryTable = () => {
         headers: { Authorization: `Bearer ${access_token}` },
       });
 
-      // 2. Upload Image (if changed)
+      // 2. Upload Normal Image (if changed)
       if (imageFile) {
         const category = categories.find((c) => c.category_id === id);
-        const hasExistingImage = category?.images && category.images.length > 0;
+        const normalImage = category?.images?.find((i) => i.type === "normal");
 
-        if (hasExistingImage) {
-          // Update existing image - use PUT with 'image' field
-          const imageId = category!.images[0].id;
+        if (normalImage) {
+          // Update existing normal image - use PUT with 'image' field
           const formData = new FormData();
           formData.append("image", imageFile);
           formData.append("category", id.toString());
 
           await axios.put(
-            `${domainUrl}products/uploads/${imageId}/`,
+            `${domainUrl}products/uploads/${normalImage.id}/`,
             formData,
             {
               headers: {
@@ -655,9 +789,47 @@ export const ListAllCategoryTable = () => {
             },
           );
         } else {
-          // Create new image - use POST with 'normal_image' field
+          // Create new normal image - use POST with 'normal_image' field
           const formData = new FormData();
           formData.append("normal_image", imageFile);
+          formData.append("category", id.toString());
+
+          await axios.post(`${domainUrl}products/uploads/`, formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${access_token}`,
+            },
+          });
+        }
+      }
+
+      // 3. Upload Carousel Image (if changed)
+      if (carouselFile) {
+        const category = categories.find((c) => c.category_id === id);
+        const carouselImage = category?.images?.find(
+          (i) => i.type === "carousel",
+        );
+
+        if (carouselImage) {
+          // Update existing carousel image - use PUT with 'image' field
+          const formData = new FormData();
+          formData.append("image", carouselFile);
+          formData.append("category", id.toString());
+
+          await axios.put(
+            `${domainUrl}products/uploads/${carouselImage.id}/`,
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${access_token}`,
+              },
+            },
+          );
+        } else {
+          // Create new carousel image - use POST with 'carousel_image' field
+          const formData = new FormData();
+          formData.append("carousel_image", carouselFile);
           formData.append("category", id.toString());
 
           await axios.post(`${domainUrl}products/uploads/`, formData, {
