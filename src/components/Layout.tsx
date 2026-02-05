@@ -55,7 +55,7 @@ export default function Layout() {
   const user_name = localStorage.getItem("user_name");
 
   // --- Theme State & Logic ---
-  const [darkMode] = useState(() => {
+  const [darkMode, setDarkMode] = useState(() => {
     if (typeof window !== "undefined") {
       return (
         localStorage.getItem("theme") === "dark" ||
@@ -65,6 +65,10 @@ export default function Layout() {
     }
     return false;
   });
+
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
 
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const navigate = useNavigate();
@@ -185,19 +189,19 @@ export default function Layout() {
     const isActiveLink = !item.subMenus && item.src === pathname; // Direct link is active (e.g. Dashboard)
 
     return (
-      <li className="mb-2">
+      <li className="mb-1.5">
         {/* Main Menu Button */}
         <button
-          className={`group flex items-center justify-between w-full px-4 py-3 text-sm font-semibold rounded-xl transition-all duration-200 
+          className={`group flex items-center justify-between w-full px-3.5 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 
             ${
-              // CASE 1: Single Active Link (Dashboard) -> Solid Black
+              // CASE 1: Single Active Link (Dashboard) -> Subtle gradient
               isActiveLink
-                ? "bg-black text-white shadow-md dark:bg-white dark:text-black"
-                : // CASE 2: Active Parent (User Management Open) -> Light Gray Background
+                ? "bg-gradient-to-r from-gray-900 to-gray-800 text-white shadow-sm dark:from-zinc-100 dark:to-zinc-200 dark:text-black"
+                : // CASE 2: Active Parent (User Management Open) -> Light background
                   isActiveParent
-                  ? "bg-gray-100 text-gray-900 dark:bg-zinc-800 dark:text-white"
-                  : // CASE 3: Inactive -> Text Gray
-                    "text-gray-500 hover:bg-gray-50 hover:text-gray-900 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-white"
+                  ? "bg-gray-100/80 text-gray-900 dark:bg-zinc-800/50 dark:text-white"
+                  : // CASE 3: Inactive -> Subtle hover
+                    "text-gray-600 hover:bg-gray-100/60 hover:text-gray-900 dark:text-zinc-400 dark:hover:bg-zinc-900/40 dark:hover:text-white"
             }`}
           onClick={() => {
             if (item.subMenus) {
@@ -210,19 +214,19 @@ export default function Layout() {
         >
           <div className="flex items-center gap-3">
             <item.icon
-              className={`h-[22px] w-[22px] transition-colors ${
+              className={`h-5 w-5 transition-colors ${
                 isActiveLink
                   ? "text-white dark:text-black"
                   : isActiveParent
                     ? "text-gray-900 dark:text-white"
-                    : "text-gray-400 group-hover:text-gray-700 dark:text-zinc-500 dark:group-hover:text-zinc-300"
+                    : "text-gray-500 group-hover:text-gray-700 dark:text-zinc-500 dark:group-hover:text-zinc-300"
               }`}
             />
-            <span className="tracking-tight">{item.title}</span>
+            <span>{item.title}</span>
           </div>
           {item.subMenus && (
             <ChevronDownIcon
-              className={`h-4 w-4 text-gray-400 stroke-[3] transition-transform duration-300 ${
+              className={`h-4 w-4 text-gray-500 dark:text-zinc-500 transition-transform duration-200 ${
                 item.current ? "rotate-180 text-gray-900 dark:text-white" : ""
               }`}
             />
@@ -239,7 +243,7 @@ export default function Layout() {
           leaveFrom="max-h-[500px] opacity-100 translate-y-0"
           leaveTo="max-h-0 opacity-0 -translate-y-2"
         >
-          <div className="mt-1 space-y-1">
+          <div className="mt-1 space-y-0.5">
             {/* Note: Vertical Line Removed to match image */}
 
             {item.subMenus?.map((subItem, idx) => {
@@ -249,21 +253,21 @@ export default function Layout() {
                   to={subItem.src}
                   key={idx}
                   onClick={() => isMobile && setSidebarOpen(false)}
-                  className={`flex items-center pl-12 pr-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 relative group
+                  className={`flex items-center pl-11 pr-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 relative group
                     ${
-                      // Submenu Item Active State -> Light Gray Background
+                      // Submenu Item Active State -> Subtle background
                       isActiveSub
-                        ? "bg-gray-50 text-gray-900 dark:bg-zinc-800/50 dark:text-white"
-                        : "text-gray-500 hover:text-gray-900 hover:bg-gray-50/50 dark:text-zinc-400 dark:hover:text-white dark:hover:bg-zinc-900/30"
+                        ? "bg-gray-100/80 text-gray-900 dark:bg-zinc-800/40 dark:text-white"
+                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-50/60 dark:text-zinc-400 dark:hover:text-white dark:hover:bg-zinc-900/30"
                     }`}
                 >
                   {/* Dot Indicator for Active Submenu Item */}
-                  <div className="absolute left-[26px] flex items-center justify-center w-5">
+                  <div className="absolute left-[22px] flex items-center justify-center w-4">
                     <div
                       className={`rounded-full transition-all duration-200 ${
                         isActiveSub
-                          ? "h-1.5 w-1.5 bg-black dark:bg-white ring-2 ring-gray-200 dark:ring-zinc-700"
-                          : "h-1 w-1 bg-gray-300 group-hover:bg-gray-500 dark:bg-zinc-600"
+                          ? "h-1.5 w-1.5 bg-gray-900 dark:bg-white ring-2 ring-gray-200 dark:ring-zinc-700"
+                          : "h-1 w-1 bg-gray-400 group-hover:bg-gray-600 dark:bg-zinc-600 dark:group-hover:bg-zinc-400"
                       }`}
                     />
                   </div>
@@ -279,7 +283,7 @@ export default function Layout() {
   };
 
   return (
-    <div className="min-h-screen flex bg-white dark:bg-black font-sans text-gray-900 dark:text-zinc-100 transition-colors duration-500">
+    <div className="min-h-screen flex bg-white dark:bg-black text-gray-900 dark:text-zinc-100 transition-colors duration-500">
       {/* --- Injected Styles for Smooth Animation --- */}
       <style>{`
         @keyframes smoothFadeInUp {
@@ -361,22 +365,22 @@ export default function Layout() {
       </Transition.Root>
 
       {/* --- Desktop Sidebar --- */}
-      <div className="hidden lg:flex lg:flex-col lg:w-72 lg:fixed lg:inset-y-0 bg-white dark:bg-black border-r border-gray-100 dark:border-zinc-800 z-40 transition-colors duration-500">
-        <div className="flex items-center gap-3 h-20 px-8">
+      <div className="hidden lg:flex lg:flex-col lg:w-72 lg:fixed lg:inset-y-0 bg-white dark:bg-zinc-950 border-r border-gray-200/60 dark:border-zinc-800/60 z-40 transition-colors duration-500">
+        <div className="flex items-center gap-3 h-20 px-8 border-b border-gray-200/60 dark:border-zinc-800/60">
           {/* <img src={Logo} alt="Logo" className="h-8 w-auto dark:invert transition-all duration-500" /> */}
-          <span className="text-gray-900 dark:text-white font-bold text-2xl tracking-tighter">
+          <span className="text-gray-900 dark:text-white font-semibold text-xl tracking-tight">
             T-Stocks
           </span>
         </div>
 
         {/* User Role Card - Clean Design */}
-        <div className="px-6 mb-2">
-          <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-gray-50 border border-gray-100 dark:bg-zinc-900 dark:border-zinc-800">
-            <div className="h-8 w-8 rounded-full bg-black dark:bg-white flex items-center justify-center text-white dark:text-black text-xs font-bold">
+        <div className="px-6 py-4">
+          <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100/50 border border-gray-200/60 dark:from-zinc-900/50 dark:to-zinc-900/30 dark:border-zinc-800/60 shadow-sm">
+            <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-gray-900 to-gray-700 dark:from-zinc-100 dark:to-zinc-300 flex items-center justify-center text-white dark:text-black text-xs font-semibold shadow-sm">
               {role ? role.charAt(0).toUpperCase() : "U"}
             </div>
             <div className="flex flex-col">
-              <span className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">
+              <span className="text-[10px] text-gray-500 dark:text-zinc-500 uppercase tracking-wider font-medium">
                 Workspace
               </span>
               <span className="text-sm text-gray-900 dark:text-white font-semibold capitalize">
@@ -395,13 +399,13 @@ export default function Layout() {
           </ul>
         </nav>
 
-        <div className="p-4 border-t border-gray-100 dark:border-zinc-900">
+        <div className="p-4 border-t border-gray-200/60 dark:border-zinc-800/60">
           <button
             onClick={() => {
               localStorage.clear();
               navigate("/login");
             }}
-            className="flex items-center w-full px-4 py-3 text-sm font-semibold text-gray-500 rounded-xl hover:bg-red-50 hover:text-red-600 dark:hover:bg-zinc-900 dark:hover:text-red-400 transition-all duration-200"
+            className="flex items-center w-full px-3.5 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-red-50/80 hover:text-red-600 dark:text-zinc-400 dark:hover:bg-red-950/20 dark:hover:text-red-400 transition-all duration-200"
           >
             <ArrowRightOnRectangleIcon className="h-5 w-5 mr-3" />
             Log out
@@ -412,18 +416,18 @@ export default function Layout() {
       {/* --- Main Content Area --- */}
       <div className="flex-1 flex flex-col min-h-screen lg:ml-72 transition-all duration-300">
         {/* Header */}
-        <div className="sticky top-0 z-30 flex h-20 items-center justify-between gap-x-4 bg-white/80 dark:bg-black/80 backdrop-blur-xl px-4 sm:px-6 lg:px-10 transition-colors duration-500">
+        <div className="sticky top-0 z-30 flex h-16 items-center justify-between gap-x-4 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md px-4 sm:px-6 lg:px-8 border-b border-gray-200/60 dark:border-zinc-800/60 transition-colors duration-500">
           <div className="flex items-center gap-4">
             <button
               type="button"
-              className="-m-2.5 p-2.5 text-gray-700 dark:text-gray-200 lg:hidden"
+              className="-m-2.5 p-2.5 text-gray-600 dark:text-gray-300 lg:hidden hover:bg-gray-100 dark:hover:bg-zinc-900 rounded-lg transition-colors"
               onClick={() => setSidebarOpen(true)}
             >
               <Bars3Icon className="h-6 w-6" />
             </button>
 
             <div className="hidden sm:flex flex-col">
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white capitalize tracking-tight">
+              <h1 className="text-lg font-semibold text-gray-900 dark:text-white capitalize tracking-tight">
                 {pathname === "/admin-home"
                   ? "Dashboard"
                   : pathname.replace("/", "").replace("-", " ")}
@@ -431,19 +435,53 @@ export default function Layout() {
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            {/* <button className="p-2 text-gray-400 hover:text-gray-900 hover:bg-gray-100 dark:hover:text-white dark:hover:bg-zinc-800 transition-all rounded-full relative">
-                <BellIcon className="h-6 w-6" />
-                <span className="absolute top-2.5 right-2.5 h-2 w-2 rounded-full bg-red-500 border-2 border-white dark:border-black"></span>
-             </button> */}
+          <div className="flex items-center gap-3">
+            {/* Dark Mode Toggle */}
+            <button
+              onClick={toggleDarkMode}
+              className="p-2 text-gray-500 hover:text-gray-900 hover:bg-gray-100 dark:text-zinc-400 dark:hover:text-white dark:hover:bg-zinc-900 transition-all rounded-lg"
+              aria-label="Toggle dark mode"
+            >
+              {darkMode ? (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2}
+                  stroke="currentColor"
+                  className="w-5 h-5"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2}
+                  stroke="currentColor"
+                  className="w-5 h-5"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"
+                  />
+                </svg>
+              )}
+            </button>
 
-            <div className="h-8 w-px bg-gray-200 dark:bg-zinc-800 mx-2" />
+            <div className="h-6 w-px bg-gray-200 dark:bg-zinc-800" />
 
             <button
               onClick={() => setIsProfileOpen(true)}
-              className="flex items-center gap-3 p-1 rounded-full hover:bg-gray-50 dark:hover:bg-zinc-900 transition-all"
+              className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-900 transition-all"
             >
-              <div className="h-9 w-9 rounded-full bg-black dark:bg-white flex items-center justify-center text-white dark:text-black font-bold text-sm">
+              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-gray-900 to-gray-700 dark:from-zinc-100 dark:to-zinc-300 flex items-center justify-center text-white dark:text-black font-semibold text-sm shadow-sm">
                 {user_name?.charAt(0).toUpperCase() ?? "U"}
               </div>
             </button>
@@ -451,7 +489,7 @@ export default function Layout() {
         </div>
 
         {/* Page Content */}
-        <main className="flex-1 py-8 px-4 sm:px-6 lg:px-10 max-w-[1600px] mx-auto w-full transition-colors duration-500">
+        <main className="flex-1 py-6 px-4 sm:px-6 lg:px-8 max-w-[1600px] mx-auto w-full bg-gray-50/30 dark:bg-zinc-950/30 transition-colors duration-500">
           <div key={pathname} className="page-transition">
             <Outlet />
           </div>

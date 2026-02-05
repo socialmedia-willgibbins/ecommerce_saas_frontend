@@ -260,12 +260,12 @@ const AddCategory: React.FC = () => {
   // );
 
   return (
-    <div className="min-h-screen bg-gray-50 rounded-2xl dark:bg-black p-4 sm:p-6 lg:p-8 transition-colors duration-500">
+    <div className="min-h-screen p-4 sm:p-6 lg:p-8 transition-colors duration-500">
       <div className="max-w-5xl mx-auto">
         {/* Header Navigation */}
-        <div className="flex items-center gap-4 mb-8">
+        <div className="flex items-center gap-4 mb-6">
           <div>
-            <h1 className="text-lg font-bold text-zinc-900 dark:text-white tracking-tight">
+            <h1 className="text-xl font-semibold text-zinc-900 dark:text-white tracking-tight">
               Add New Category
             </h1>
             <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
@@ -274,15 +274,15 @@ const AddCategory: React.FC = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Form Section (2 Columns) */}
           <div className="lg:col-span-2">
-            <div className="bg-white dark:bg-zinc-950 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
-              <div className="p-6 border-b border-zinc-100 dark:border-zinc-800">
-                <h3 className="text-base font-bold text-zinc-900 dark:text-white">
+            <div className="bg-white dark:bg-zinc-950 rounded-xl border border-gray-200/60 dark:border-zinc-800/60 shadow-sm overflow-hidden">
+              <div className="p-6 border-b border-gray-200/60 dark:border-zinc-800/60">
+                <h3 className="text-base font-semibold text-zinc-900 dark:text-white">
                   Category Details
                 </h3>
-                <p className="text-xs text-zinc-500 mt-1">
+                <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
                   Fill in the information below to create a new category.
                 </p>
               </div>
