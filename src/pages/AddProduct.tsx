@@ -34,6 +34,7 @@ interface ProductData {
   description: string;
   price: string;
   stock: string;
+  discount_percentage: string;
 }
 
 type CategoryOption = { value: number | null; label: string };
@@ -110,6 +111,7 @@ const AddProduct: React.FC = () => {
     description: "",
     price: "",
     stock: "",
+    discount_percentage: "",
   });
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -244,6 +246,13 @@ const AddProduct: React.FC = () => {
       toast.error("Stock must be a non-negative number");
       return;
     }
+    if (productData.discount_percentage) {
+      const discount = Number(productData.discount_percentage);
+      if (isNaN(discount) || discount < 0.01 || discount > 99.9) {
+        toast.error("Discount percentage must be between 0.01% and 99.9%");
+        return;
+      }
+    }
 
     setLoading(true);
     try {
@@ -265,6 +274,7 @@ const AddProduct: React.FC = () => {
         description: productData.description,
         price: Number(price),
         stock: Number(stock),
+        discount_percentage: productData.discount_percentage ? Number(productData.discount_percentage) : 0,
       };
       const resp = await axios.post(
         `${domainUrl}products/productdetail/`,
@@ -288,6 +298,7 @@ const AddProduct: React.FC = () => {
         description: "",
         price: "",
         stock: "",
+        discount_percentage: "",
       });
       setSelectedImage(null);
       setImagePreview(null);
@@ -511,7 +522,7 @@ const AddProduct: React.FC = () => {
                         onChange={(e: any) =>
                           handleInputChange("price", e.target.value)
                         }
-                        className={`w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-white text-sm rounded-xl py-3 outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent transition-all placeholder:text-zinc-400 pl-10 pr-4
+                        className={`w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-white text-sm rounded-xl py-3 outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent transition-all placeholder:text-zinc-400 pl-10 pr-4 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none
                       `}
                       />
                     </div>
@@ -547,7 +558,36 @@ const AddProduct: React.FC = () => {
                         onChange={(e: any) =>
                           handleInputChange("stock", e.target.value)
                         }
-                        className={`w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-white text-sm rounded-xl py-3 outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent transition-all placeholder:text-zinc-400 pl-10 pr-4
+                        className={`w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-white text-sm rounded-xl py-3 outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent transition-all placeholder:text-zinc-400 pl-10 pr-4 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none
+                      `}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Discount Percentage */}
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                      Discount %
+                    </label>
+                    <div className="relative group">
+                      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-black dark:group-focus-within:text-white transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="h-5 w-5">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 14.25l6-6m4.5-3.493V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0c1.1.128 1.907 1.077 1.907 2.185zM9.75 9h.008v.008H9.75V9zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm4.125 4.5h.008v.008h-.008V13.5zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                        </svg>
+                      </div>
+
+                      <input
+                        type="number"
+                        id="discount_percentage"
+                        value={productData.discount_percentage}
+                        placeholder="0"
+                        min="0.01"
+                        max="99.9"
+                        step="0.01"
+                        onChange={(e: any) =>
+                          handleInputChange("discount_percentage", e.target.value)
+                        }
+                        className={`w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-white text-sm rounded-xl py-3 outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent transition-all placeholder:text-zinc-400 pl-10 pr-4 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none
                       `}
                       />
                     </div>
@@ -735,7 +775,7 @@ const AddProduct: React.FC = () => {
                         Price
                       </p>
                       <p className="text-lg font-bold text-zinc-900 dark:text-white">
-                        ${productData.price || "0.00"}
+                        ₹{productData.price ? Number(productData.price).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "0.00"}
                       </p>
                     </div>
                     <div className="text-right">

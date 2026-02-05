@@ -18,6 +18,7 @@ type ProductData = {
   description: string;
   price: string;
   stock: string;
+  discount_percentage?: string;
   product_id?: number;
 };
 
@@ -214,6 +215,7 @@ const UpdateProduct: React.FC = () => {
       formData.description !== initialFormData.description ||
       formData.price !== initialFormData.price ||
       formData.stock !== initialFormData.stock ||
+      formData.discount_percentage !== initialFormData.discount_percentage ||
       formData.category.category_code !==
         initialFormData.category.category_code ||
       formData.category.name !== initialFormData.category.name ||
@@ -298,6 +300,7 @@ const UpdateProduct: React.FC = () => {
           description: formData.description,
           price: formData.price,
           stock: Number(formData.stock),
+          discount_percentage: formData.discount_percentage ? Number(formData.discount_percentage) : 0,
         };
 
         const resp = await axios.put(
@@ -464,7 +467,7 @@ const UpdateProduct: React.FC = () => {
                     type="number"
                     value={formData.price}
                     onChange={(e) => handleInputChange("price", e.target.value)}
-                    className="mt-1 block w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                    className="mt-1 block w-full px-2 py-1 border border-gray-300 rounded text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     disabled={submitLoading}
                   />
                 </div>
@@ -476,7 +479,21 @@ const UpdateProduct: React.FC = () => {
                     type="number"
                     value={formData.stock}
                     onChange={(e) => handleInputChange("stock", e.target.value)}
-                    className="mt-1 block w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                    className="mt-1 block w-full px-2 py-1 border border-gray-300 rounded text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    disabled={submitLoading}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600">
+                    Discount %
+                  </label>
+                  <input
+                    type="number"
+                    value={formData.discount_percentage || ""}
+                    onChange={(e) => handleInputChange("discount_percentage", e.target.value)}
+                    min="0"
+                    max="100"
+                    className="mt-1 block w-full px-2 py-1 border border-gray-300 rounded text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     disabled={submitLoading}
                   />
                 </div>

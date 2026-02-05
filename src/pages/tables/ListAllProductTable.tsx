@@ -93,7 +93,7 @@ const ModalInput = ({
         onChange={onChange}
         disabled={disabled}
         placeholder={placeholder}
-        className="w-full bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-white text-sm rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:bg-white dark:focus:bg-black transition-all disabled:opacity-50 placeholder:text-zinc-400"
+        className="w-full bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-white text-sm rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:bg-white dark:focus:bg-black transition-all disabled:opacity-50 placeholder:text-zinc-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
       />
     )}
   </div>
@@ -215,6 +215,7 @@ const EditProductModal = ({
     description: "",
     price: "",
     stock: "",
+    discount_percentage: "",
     category: {
       category_code: "",
       name: "",
@@ -234,6 +235,7 @@ const EditProductModal = ({
         description: product.description,
         price: product.price,
         stock: product.stock.toString(),
+        discount_percentage: product.discount_percentage?.toString() || "",
         category: {
           category_code: product.category?.category_code || "",
           name: product.category?.name || "",
@@ -397,6 +399,20 @@ const EditProductModal = ({
                           value={formData.stock}
                           onChange={(e: any) =>
                             setFormData({ ...formData, stock: e.target.value })
+                          }
+                          disabled={loading}
+                          placeholder="0"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <ModalInput
+                          label="Discount %"
+                          id="e-discount"
+                          type="number"
+                          value={formData.discount_percentage || ""}
+                          onChange={(e: any) =>
+                            setFormData({ ...formData, discount_percentage: e.target.value })
                           }
                           disabled={loading}
                           placeholder="0"
@@ -679,6 +695,16 @@ export const ListAllProductTable = () => {
   ) => {
     setActionLoading(true);
     try {
+      // Validate discount percentage if provided
+      if (data.discount_percentage) {
+        const discount = Number(data.discount_percentage);
+        if (isNaN(discount) || discount < 0.01 || discount > 99.9) {
+          toast.error("Discount percentage must be between 0.01% and 99.9%");
+          setActionLoading(false);
+          return;
+        }
+      }
+
       // 1. Update Product Details
       // Remove category from payload if any field is empty
       const payload = { ...data };
