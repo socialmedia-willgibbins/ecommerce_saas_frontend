@@ -1,5 +1,15 @@
 @import "tailwindcss";
 
+@theme {
+  --color-primary: #6366f1;
+  --color-primary-hover: #4f46e5;
+  --color-success: #10b981;
+  --color-danger: #ef4444;
+  --color-warning: #f59e0b;
+}
+
+@variant dark (&:is(.dark *));
+
 * {
   font-family:
     "Inter",
@@ -11,14 +21,6 @@
     "Ubuntu",
     "Cantarell",
     sans-serif;
-}
-
-:root {
-  --color-primary: #6366f1;
-  --color-primary-hover: #4f46e5;
-  --color-success: #10b981;
-  --color-danger: #ef4444;
-  --color-warning: #f59e0b;
 }
 
 /* Professional scrollbar */
