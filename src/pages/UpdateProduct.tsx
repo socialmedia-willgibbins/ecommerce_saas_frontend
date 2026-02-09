@@ -300,7 +300,9 @@ const UpdateProduct: React.FC = () => {
           description: formData.description,
           price: formData.price,
           stock: Number(formData.stock),
-          discount_percentage: formData.discount_percentage ? Number(formData.discount_percentage) : 0,
+          discount_percentage: formData.discount_percentage
+            ? Number(formData.discount_percentage)
+            : 0,
         };
 
         const resp = await axios.put(
@@ -490,7 +492,9 @@ const UpdateProduct: React.FC = () => {
                   <input
                     type="number"
                     value={formData.discount_percentage || ""}
-                    onChange={(e) => handleInputChange("discount_percentage", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("discount_percentage", e.target.value)
+                    }
                     min="0"
                     max="100"
                     className="mt-1 block w-full px-2 py-1 border border-gray-300 rounded text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"

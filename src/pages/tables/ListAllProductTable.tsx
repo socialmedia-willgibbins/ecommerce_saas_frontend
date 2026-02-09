@@ -412,7 +412,10 @@ const EditProductModal = ({
                           type="number"
                           value={formData.discount_percentage || ""}
                           onChange={(e: any) =>
-                            setFormData({ ...formData, discount_percentage: e.target.value })
+                            setFormData({
+                              ...formData,
+                              discount_percentage: e.target.value,
+                            })
                           }
                           disabled={loading}
                           placeholder="0"
